@@ -8,9 +8,7 @@ using Microsoft.AspNetCore.Server.HttpSys;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using WebApplication1.Data.dao;
-using WebApplication1.Data.dao.Other;
 using WebApplication1.Data.Dto;
-using WebApplication1.Data.Identity;
 using WebApplication1.Service;
 
 namespace WebApplication1.Controller;
@@ -38,7 +36,7 @@ public class ClientController : ControllerBase
 
         if (account == null)
             return Problem("Something got wrong in ClientController.GetAllProducts()");
-        var orders = _context.Orders.Where(c => c.OwnerId == account.Id).Include(c => c.Products);
+        var orders = _context.UserOrders.Where(c => c.OwnerId == account.Id).Include(c => c.Products);
         return Ok(JsonConvert.SerializeObject(orders.ToList()));
     }
 
@@ -48,7 +46,7 @@ public class ClientController : ControllerBase
         var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (id is null)
             return BadRequest("Problema blyat");
-        var order = _context.Orders.FirstOrDefault(x => x.Id == orderId);
+        var order = _context.UserOrders.FirstOrDefault(x => x.OrderId == orderId);
         if (order == null)
             return BadRequest("Order not found");
         var newProduct = new Product()
@@ -59,7 +57,7 @@ public class ClientController : ControllerBase
             PricePerQuantity = product.PricePerQuantity,
             Measure = new Measure()
             {
-                Value = product.MeasureName
+                MeasureName = product.MeasureName
             }
         };
         order.Products.Add(newProduct);
@@ -77,9 +75,9 @@ public class ClientController : ControllerBase
             return BadRequest("User is null");
         Status? status = new Status()
         {
-            Value = "new"
+            Name = "new"
         };
-        Order order = new Order
+        ClientOrder order = new ClientOrder
         {
             Products = new List<Product>(),
             Status = status,
@@ -97,7 +95,7 @@ public class ClientController : ControllerBase
         Account account = await _userManager.FindByIdAsync(userId);
         if (account == null)
             return BadRequest("User not found");
-        var order = _context.Orders.Include(x => x.Products).FirstOrDefault(x => x.Id == orderId);
+        var order = _context.UserOrders.Include(x => x.Products).FirstOrDefault(x => x.OrderId == orderId);
         if (order == null)
             return BadRequest("Order not found");
 
@@ -119,7 +117,7 @@ public class ClientController : ControllerBase
         var offer = _context.Offers.FirstOrDefault(x => x.OfferId == offerId);
         if (offer == null)
             return BadRequest("Offer not found");
-        var order = _context.Orders.Include(x => x.Products).FirstOrDefault(x => x.Id == orderId);
+        var order = _context.UserOrders.Include(x => x.Products).FirstOrDefault(x => x.OrderId == orderId);
         if (order == null)
             return BadRequest("Order not found");
 
@@ -141,13 +139,13 @@ public class ClientController : ControllerBase
         if (account == null)
             return BadRequest("User not found");
 
-        var order = account.Orders.FirstOrDefault(x => x.Id == orderId);
+        var order = account.Orders.FirstOrDefault(x => x.OrderId == orderId);
         if (order == null)
             return BadRequest("Order not found");
 
         order.Status = new Status
         {
-            Value = "Submitted"
+            Name = "Submitted"
         };
         order.Products.ForEach(x => order.TotalPrice += x.PricePerQuantity * x.Quantity);
         await _context.SaveChangesAsync();

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication1.Data.Dto;
-using WebApplication1.Data.Identity;
 
 namespace WebApplication1.Controller;
 

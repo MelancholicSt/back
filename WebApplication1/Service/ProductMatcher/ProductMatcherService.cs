@@ -11,17 +11,17 @@ public class ProductMatcherService : IProductMatcherService
         _context = context;
     }
 
-    public long MatchByPrice(Order order, Offer offer)
+    public long MatchByPrice(ClientOrder order, Offer offer)
     {
         throw new NotImplementedException();
     }
 
-    public long MatchByDeliverTime(Order order, Offer offer)
+    public long MatchByDeliverTime(ClientOrder order, Offer offer)
     {
         throw new NotImplementedException();
     }
 
-    public long MatchByRating(Order order, Offer offer)
+    public long MatchByRating(ClientOrder order, Offer offer)
     {
         throw new NotImplementedException();
     }

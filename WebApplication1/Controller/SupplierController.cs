@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data.dao;
-using WebApplication1.Data.Identity;
 
 namespace WebApplication1.Controller;
 
@@ -28,7 +27,13 @@ public class SupplierController : ControllerBase
         Account account = await _userManager.FindByIdAsync(userId);
         if (account == null)
             return BadRequest("User not found");
-      
+        _context.Offers.Add(new Offer
+        {
+            Owner = account,
+            OwnerId = account.Id,
+            Products = new List<Product>(),
+            DeliverPricePerKm = 0
+        });
         await _context.SaveChangesAsync();
         return Ok();
     }
@@ -40,7 +45,7 @@ public class SupplierController : ControllerBase
     }
 
     [HttpPost("supplier/offers/{offerId}/product/add/")]
-    public async Task<IActionResult> AddProduct(long offerId)
+    public async Task<IActionResult> AddProduct(long offerId, [FromBody] Product product)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         Account account = await _userManager.FindByIdAsync(userId);

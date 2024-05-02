@@ -9,8 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 using WebApplication1;
-    using WebApplication1.Data.Identity;
-    using WebApplication1.Service;
+using WebApplication1.Service;
 using DbContext = WebApplication1.DbContext;
 
 var builder = WebApplication.CreateBuilder(args);

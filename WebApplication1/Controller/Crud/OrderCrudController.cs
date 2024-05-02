@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using WebApplication1.Data.dao;
 using WebApplication1.Data.Dto;
-using WebApplication1.Data.Identity;
 
 namespace WebApplication1.Controller;
 
@@ -28,14 +27,14 @@ public class OrderCrudController : ControllerBase
     [HttpPost("orders/{orderId}/add/product")]
     public IActionResult AddProduct([FromBody] ProductDto product, long orderId)
     {
-        var order = _context.Orders.FirstOrDefault(x => x.Id == orderId);
+        var order = _context.UserOrders.FirstOrDefault(x => x.OrderId == orderId);
         if(order is null)
             return BadRequest("Order not found");
         Product newProduct = new Product()
         {
             Name = product.Name,
             Description = product.Description,
-            Measure = _context.Measures.FirstOrDefault(x => x.Value == product.MeasureName),
+            Measure = _context.Measures.FirstOrDefault(x => x.MeasureName == product.MeasureName),
         };
         order.Products.Add(newProduct);
         _context.SaveChanges();
@@ -45,7 +44,7 @@ public class OrderCrudController : ControllerBase
     [HttpPut("orders/{orderId}/remove/product/{productId}")]
     public async Task<IActionResult> RemoveProduct(long orderId, long productId)
     {
-        var order = _context.Orders.Include(x => x.Products).FirstOrDefault(x => x.Id == orderId);
+        var order = _context.UserOrders.Include(x => x.Products).FirstOrDefault(x => x.OrderId == orderId);
         if (order == null)
             return BadRequest("Order not found");
         var product = order.Products.FirstOrDefault(x => x.ProductId == productId);
@@ -69,13 +68,13 @@ public class OrderCrudController : ControllerBase
     [HttpGet("orders/get/all")]
     public IActionResult GetAll()
     {
-        return Ok(JsonConvert.SerializeObject(_context.Orders.ToList()));
+        return Ok(JsonConvert.SerializeObject(_context.UserOrders.ToList()));
     }
 
     [HttpGet("orders/get/{orderId}")]
     public IActionResult GetOrder(long orderId)
     {
-        var order = _context.Orders.Include(x => x.Products).FirstOrDefault(x => x.Id == orderId);
+        var order = _context.UserOrders.Include(x => x.Products).FirstOrDefault(x => x.OrderId == orderId);
         if (order is null)
             return BadRequest("Order not found");
         return Ok(JsonConvert.SerializeObject(order));
