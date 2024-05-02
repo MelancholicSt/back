@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using WebApplication1.Data.dao;
+using WebApplication1.Data.dao.Other;
 using WebApplication1.Data.Dto;
 
 namespace WebApplication1.Controller;
@@ -55,7 +56,7 @@ public class ProductCrudController : ControllerBase
             Description = productDto.Description,
             Measure = new Measure()
             {
-                MeasureName = productDto.MeasureName
+                Value = productDto.MeasureName
             },
             PricePerQuantity = productDto.PricePerQuantity,
             Quantity = productDto.Quantity
@@ -100,7 +101,7 @@ public class ProductCrudController : ControllerBase
             Description = productDto.Description,
             Measure = new Measure()
             {
-                MeasureName = productDto.MeasureName
+                Value = productDto.MeasureName
             },
             PricePerQuantity = productDto.PricePerQuantity,
             ProductId = productId,
