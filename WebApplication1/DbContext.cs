@@ -9,11 +9,14 @@ namespace WebApplication1;
 public class DbContext : IdentityDbContext<Account>
 {
 
-    public DbSet<Offer> Offers { get; set; }
+    public DbSet<FavouritesBucket> FavouritesBuckets { get; set; }
+    public DbSet<BucketProduct> BucketProducts { get; set; }
+    public DbSet<ClientBucket> ClientBuckets { get; set; }
+    public DbSet<ProductPrice> ProductPrices { get; set; }
     public DbSet<Status> Statuses { get; set; }
-    public DbSet<ClientOffer> ClientOffers { get; set; }
+
     public DbSet<Product> Products { get; set; }
-    public DbSet<ClientOrder> UserOrders { get; set; }
+    public DbSet<Order> UserOrders { get; set; }
     public DbSet<Measure> Measures { get; set; }
     
 

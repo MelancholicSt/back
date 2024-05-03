@@ -75,18 +75,18 @@ public class AccountController : ControllerBase
 
     [HttpPost("account/login")]
     [AllowAnonymous]
-    public async Task<IActionResult> Login([FromBody] LoginAccountDto account)
+    public async Task<IActionResult> Login([FromBody] AuthAccountDto authAccount)
     {
         if (_signInManager.IsSignedIn(User))
         {
             return Ok();
         }
 
-        var user = await _signInManager.UserManager.FindByEmailAsync(account.Email);
+        var user = await _signInManager.UserManager.FindByEmailAsync(authAccount.Email);
         if (user == null)
             return BadRequest("Username or password is incorrect");
 
-        var result = await _signInManager.PasswordSignInAsync(user.UserName, account.Password, false, false);
+        var result = await _signInManager.PasswordSignInAsync(user.UserName, authAccount.Password, false, false);
 
         if (!result.Succeeded)
             return BadRequest("Bad credentials");

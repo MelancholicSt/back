@@ -1,7 +1,8 @@
 ﻿namespace WebApplication1.Data.dao;
 
-public class Supplier
+public class Supplier : Account
 {
-    public string AccountId { get; set; } = null!;
-    public List<Material> Materials { get; set; } = new ();
+    public List<Order> PerformingOrders { get; set; } = new();
+    public List<Material> AvailableMaterials { get; set; } = new();
+    
 }

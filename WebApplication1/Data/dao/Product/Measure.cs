@@ -2,7 +2,7 @@
 
 namespace WebApplication1.Data.dao;
 
-[Table("measure")]
+
 public class Measure
 {
     public int MeasureId { get; set;}

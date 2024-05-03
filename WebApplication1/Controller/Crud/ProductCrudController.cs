@@ -68,7 +68,7 @@ public class ProductCrudController : ControllerBase
     [HttpPost("products/{productId}/add/amount/{productAmount}")]
     public async Task<IActionResult> AddProductAmount(long productId, int productAmount)
     {
-        var product = _context.Products.FirstOrDefault(x => x.ProductId == productId);
+        var product = _context.Products.FirstOrDefault(x => x.Id == productId);
         if (product == null)
             return BadRequest("Product not found");
         product.Quantity += productAmount;
@@ -79,7 +79,7 @@ public class ProductCrudController : ControllerBase
     [HttpPut("products/{productId}/set/amount/{productAmount}")]
     public async Task<IActionResult> SetProductAmount(long productId, int productAmount)
     {
-        var product = _context.Products.FirstOrDefault(x => x.ProductId == productId);
+        var product = _context.Products.FirstOrDefault(x => x.Id == productId);
         if (product == null)
             return BadRequest("Product not found");
         product.Quantity = productAmount;
@@ -90,7 +90,7 @@ public class ProductCrudController : ControllerBase
     [HttpPut("products/{productId}/change")]
     public async Task<IActionResult> ChangeProduct(long productId, [FromBody] ProductDto productDto)
     {
-        var oldProduct = _context.Products.FirstOrDefault(x => x.ProductId == productId);
+        var oldProduct = _context.Products.FirstOrDefault(x => x.Id == productId);
         if (oldProduct == null)
             return BadRequest("Product not found");
         _context.Products.Remove(oldProduct);
@@ -103,7 +103,7 @@ public class ProductCrudController : ControllerBase
                 MeasureName = productDto.MeasureName
             },
             PricePerQuantity = productDto.PricePerQuantity,
-            ProductId = productId,
+            Id = productId,
             Quantity = productDto.Quantity
         };
         _context.Products.Add(product);
@@ -114,7 +114,7 @@ public class ProductCrudController : ControllerBase
     [HttpDelete("products/{productId}/delete")]
     public async Task<IActionResult> DeleteProduct(long productId)
     {
-        var product = _context.Products.FirstOrDefault(x => x.ProductId == productId);
+        var product = _context.Products.FirstOrDefault(x => x.Id == productId);
         if (product == null)
             return BadRequest("Product not found");
         _context.Products.Remove(product);

@@ -16,11 +16,11 @@ namespace WebApplication1.Controller;
 [ApiController]
 public class ClientController : ControllerBase
 {
-    private UserManager<Account> _userManager;
+    private UserManager<Client> _userManager;
     private INotificationService _notificationService;
     private DbContext _context;
 
-    public ClientController(UserManager<Account> userManager, DbContext context,
+    public ClientController(UserManager<Client> userManager, DbContext context,
         INotificationService notificationService)
     {
         _userManager = userManager;
@@ -40,27 +40,17 @@ public class ClientController : ControllerBase
         return Ok(JsonConvert.SerializeObject(orders.ToList()));
     }
 
-    [HttpPost("client/orders/{orderId}/products/add")]
-    public async Task<IActionResult> AddProduct(long orderId, [FromBody] ProductDto product)
+    [HttpPost("client/bucket/add/product/{productId}")]
+    public async Task<IActionResult> AddProductToBucket(long productId)
     {
         var id = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (id is null)
             return BadRequest("Problema blyat");
-        var order = _context.UserOrders.FirstOrDefault(x => x.OrderId == orderId);
-        if (order == null)
-            return BadRequest("Order not found");
-        var newProduct = new Product()
-        {
-            Name = product.Name,
-            Description = product.Description,
-            Quantity = product.Quantity,
-            PricePerQuantity = product.PricePerQuantity,
-            Measure = new Measure()
-            {
-                MeasureName = product.MeasureName
-            }
-        };
-        order.Products.Add(newProduct);
+        var client = await _userManager.FindByIdAsync(id)!;
+        var product = _context.Products.FirstOrDefault(x => x.Id == productId);
+        var bucket = _context.ClientBuckets.Include(clientBucket => clientBucket.Products)
+            .FirstOrDefault(x => x.Id == client.ClientBucket.Id);
+
         await _context.SaveChangesAsync();
         return Ok();
     }
@@ -70,14 +60,14 @@ public class ClientController : ControllerBase
     public async Task<IActionResult> CreateOrder()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        Account account = await _userManager.FindByIdAsync(userId);
+        Client account = await _userManager.FindByIdAsync(userId);
         if (account == null)
             return BadRequest("User is null");
         Status? status = new Status()
         {
             Name = "new"
         };
-        ClientOrder order = new ClientOrder
+        Order order = new Order
         {
             Products = new List<Product>(),
             Status = status,
@@ -99,7 +89,7 @@ public class ClientController : ControllerBase
         if (order == null)
             return BadRequest("Order not found");
 
-        var product = order.Products.FirstOrDefault(x => x.ProductId == productId);
+        var product = order.Products.FirstOrDefault(x => x.Id == productId);
         if (product == null)
             return BadRequest("Product not found");
         order.Products.Remove(product);

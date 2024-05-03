@@ -47,7 +47,7 @@ public class OrderCrudController : ControllerBase
         var order = _context.UserOrders.Include(x => x.Products).FirstOrDefault(x => x.OrderId == orderId);
         if (order == null)
             return BadRequest("Order not found");
-        var product = order.Products.FirstOrDefault(x => x.ProductId == productId);
+        var product = order.Products.FirstOrDefault(x => x.Id == productId);
         if (product == null)
             return BadRequest("Product not found");
         order.Products.Remove(product);

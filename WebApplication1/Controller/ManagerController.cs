@@ -62,7 +62,7 @@ public class ManagerController : ControllerBase
     [HttpPost("manager/products/{productId}/change/price/{pricePerQuantity}")]
     public async Task<IActionResult> ChangePrice(long productId, int pricePerQuantity)
     {
-        var product = _context.Products.FirstOrDefault(x => x.ProductId == productId);
+        var product = _context.Products.FirstOrDefault(x => x.Id == productId);
         if (product == null)
             return BadRequest("Product not found");
         product.PricePerQuantity = pricePerQuantity;
