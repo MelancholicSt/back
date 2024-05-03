@@ -111,3 +111,6 @@ C:\Users\DRainDev\RiderProjects\WebApplication1\WebApplication1\obj\Release\net8
 C:\Users\DRainDev\RiderProjects\WebApplication1\WebApplication1\obj\Release\net8.0\WebApplication1.pdb
 C:\Users\DRainDev\RiderProjects\WebApplication1\WebApplication1\obj\Release\net8.0\WebApplication1.genruntimeconfig.cache
 C:\Users\DRainDev\RiderProjects\WebApplication1\WebApplication1\obj\Release\net8.0\ref\WebApplication1.dll
+C:\Users\DRainDev\RiderProjects\WebApplication1\WebApplication1\bin\Release\net8.0\BouncyCastle.Cryptography.dll
+C:\Users\DRainDev\RiderProjects\WebApplication1\WebApplication1\bin\Release\net8.0\MailKit.dll
+C:\Users\DRainDev\RiderProjects\WebApplication1\WebApplication1\bin\Release\net8.0\MimeKit.dll

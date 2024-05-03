@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAfYhSZQ4ZaES+VwMzerDAHgAAAAACAAAAAAAQZgAAAAEAACAAAABiMGeAqlTroog1gRDf2GFAJkGhcDPSE5afbcHNYsRcnAAAAAAOgAAAAAIAACAAAADWzhfqxExALUtvoMKQ13JtXQkkyVpg0OpPht/rEZiLhDAAAABda1cTF9mwUgEse/1APLB4DnE1dEmh1ey17FDGd5sLFfMGzAbh28TULKpPvJFhOsBAAAAAZHaFJiC3guE00ggu/F81n+A3Y03p1krdYMULkJealqtGjO5REbf4w+2qZ4pjeDc1zvTvrWNyhKfILPTqIWLNJg==</EncryptedPassword>
+    <_PublishTargetUrl>ftp://31.31.196.247/krtpark.ru</_PublishTargetUrl>
+    <History>True|2024-05-02T16:20:18.9859218Z;True|2024-05-02T19:18:34.1663901+03:00;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="appsettings.Development.json">
+      <publishTime>05/02/2024 10:17:58</publishTime>
+    </File>
+    <File Include="appsettings.json">
+      <publishTime>05/02/2024 10:17:58</publishTime>
+    </File>
+    <File Include="BouncyCastle.Cryptography.dll">
+      <publishTime>02/05/2024 11:42:46</publishTime>
+    </File>
+    <File Include="InstantAPIs.dll">
+      <publishTime>05/17/2022 17:29:50</publishTime>
+    </File>
+    <File Include="MailKit.dll">
+      <publishTime>04/13/2024 23:48:50</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.Cryptography.Internal.dll">
+      <publishTime>03/21/2024 02:34:02</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.Cryptography.KeyDerivation.dll">
+      <publishTime>03/21/2024 02:34:36</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll">
+      <publishTime>03/21/2024 02:34:52</publishTime>
+    </File>
+    <File Include="Microsoft.AspNetCore.OpenApi.dll">
+      <publishTime>03/21/2024 02:35:58</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.Abstractions.dll">
+      <publishTime>03/20/2024 02:34:10</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.dll">
+      <publishTime>03/20/2024 02:34:48</publishTime>
+    </File>
+    <File Include="Microsoft.EntityFrameworkCore.Relational.dll">
+      <publishTime>03/20/2024 02:35:40</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Identity.Core.dll">
+      <publishTime>03/21/2024 02:34:44</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Identity.Stores.dll">
+      <publishTime>03/21/2024 02:34:44</publishTime>
+    </File>
+    <File Include="Microsoft.Extensions.Options.dll">
+      <publishTime>01/18/2024 06:05:26</publishTime>
+    </File>
+    <File Include="Microsoft.OpenApi.dll">
+      <publishTime>09/26/2022 15:32:38</publishTime>
+    </File>
+    <File Include="MimeKit.dll">
+      <publishTime>04/13/2024 21:12:18</publishTime>
+    </File>
+    <File Include="MySqlConnector.dll">
+      <publishTime>01/20/2024 15:54:02</publishTime>
+    </File>
+    <File Include="Newtonsoft.Json.dll">
+      <publishTime>03/08/2023 10:09:54</publishTime>
+    </File>
+    <File Include="Pomelo.EntityFrameworkCore.MySql.dll">
+      <publishTime>03/16/2024 12:50:50</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.Swagger.dll">
+      <publishTime>07/19/2022 18:21:22</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.SwaggerGen.dll">
+      <publishTime>07/19/2022 18:21:38</publishTime>
+    </File>
+    <File Include="Swashbuckle.AspNetCore.SwaggerUI.dll">
+      <publishTime>07/19/2022 18:21:48</publishTime>
+    </File>
+    <File Include="web.config">
+      <publishTime>05/02/2024 19:20:17</publishTime>
+    </File>
+    <File Include="WebApplication1.deps.json">
+      <publishTime>05/02/2024 19:20:17</publishTime>
+    </File>
+    <File Include="WebApplication1.dll">
+      <publishTime>05/02/2024 19:20:14</publishTime>
+    </File>
+    <File Include="WebApplication1.exe">
+      <publishTime>05/02/2024 19:20:14</publishTime>
+    </File>
+    <File Include="WebApplication1.pdb">
+      <publishTime>05/02/2024 19:20:14</publishTime>
+    </File>
+    <File Include="WebApplication1.runtimeconfig.json">
+      <publishTime>05/02/2024 19:13:47</publishTime>
+    </File>
+  </ItemGroup>
+</Project>
