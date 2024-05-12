@@ -1,5 +1,6 @@
     using System.Security.Claims;
-using InstantAPIs;
+    using Amazon.S3;
+    using InstantAPIs;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -10,7 +11,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 using WebApplication1;
 using WebApplication1.Service;
-using DbContext = WebApplication1.DbContext;
+    using WebApplication1.Service.ImageService;
+    using WebApplication1.Service.ProductMatcher;
+    using DbContext = WebApplication1.DbContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +26,6 @@ builder.Services.AddEndpointsApiExplorer();
 var serviceProvider = builder.Services.BuildServiceProvider();
 var logger = serviceProvider.GetService<ILogger<AppLogs>>();
 builder.Services.AddSingleton(typeof(ILogger), logger);
-
 builder.Services.AddSwaggerGen(opt =>
 {
     opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
@@ -47,10 +49,10 @@ builder.Services.AddDbContext<DbContext>(options =>
 builder.Services.AddSingleton<IGeolocationService, GeolocationService>();
 builder.Services.AddCors();
 builder.Services.AddTransient<IRequestService, RequestService>();
-builder.Services.AddTransient<IProductMatcherService, ProductMatcherService>();
-builder.Services.AddTransient<INotificationService, NotificationService>();
+builder.Services.AddTransient<IProductMatchService, ProductMatchService>();
+builder.Services.AddTransient<INotificationSender, NotificationSender>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
-
+builder.Services.AddTransient<ICloudImageService, CloudImageService>();
 builder.Services.AddControllers();
 
 builder.Services.AddIdentity<Account, IdentityRole>(o =>

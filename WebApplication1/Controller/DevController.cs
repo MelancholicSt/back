@@ -7,8 +7,8 @@ namespace WebApplication1.Controller;
 [ApiController]
 public class DevController : ControllerBase
 {
-    private IGeolocationService _geolocationService;
-    private IEmailSender _emailSender;
+    private readonly IGeolocationService _geolocationService;
+    private readonly IEmailSender _emailSender;
     
     [ActivatorUtilitiesConstructor]
     public DevController(IGeolocationService geolocationService, IEmailSender emailSender)

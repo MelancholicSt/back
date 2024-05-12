@@ -1,13 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace WebApplication1.Data.dao;
+﻿namespace WebApplication1.Data.dao.Order;
 
 
 public class Status
 {
 
-    public int Id { get; set; }
+    public uint Id { get; set; }
     public string Name { get; set; } = null!;
+    public List<Order>? Orders { get; set; }
     
 }

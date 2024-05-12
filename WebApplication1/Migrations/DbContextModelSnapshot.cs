@@ -166,6 +166,11 @@ namespace WebApplication1.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("varchar(8)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
@@ -186,6 +191,9 @@ namespace WebApplication1.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
+
+                    b.Property<ulong>("OrganizationId")
+                        .HasColumnType("bigint unsigned");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("longtext");
@@ -215,61 +223,301 @@ namespace WebApplication1.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
+                    b.HasIndex("OrganizationId");
+
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Account");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.dao.ClientOffer", b =>
+            modelBuilder.Entity("WebApplication1.Data.dao.AccountGeolocation", b =>
                 {
-                    b.Property<long>("OfferId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("OrderId")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("varchar(255)");
-
-                    b.HasIndex("OfferId");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("ClientOffers");
-                });
-
-            modelBuilder.Entity("WebApplication1.Data.dao.ClientOrder", b =>
-                {
-                    b.Property<long>("OrderId")
+                    b.Property<ulong>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint unsigned");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("OrderId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("Id"));
 
                     b.Property<string>("AccountId")
+                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
-                    b.Property<string>("OwnerId")
+                    b.Property<string>("City")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<long>("TotalPrice")
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FullAddress")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("LocalAddress")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId")
+                        .IsUnique();
+
+                    b.ToTable("AccountGeolocations");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Client.ClientBucket", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("Id"));
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId")
+                        .IsUnique();
+
+                    b.ToTable("ClientBuckets");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Client.FavouritesBucket", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId")
+                        .IsUnique();
+
+                    b.ToTable("FavouritesBuckets");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Client.OrderProduct", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("Id"));
+
+                    b.Property<ulong>("BucketId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("ProductId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("Quantity")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BucketId");
+
+                    b.ToTable("BucketProducts");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.ImageFile", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("Id"));
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Guid")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ImageFiles");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Order.Order", b =>
+                {
+                    b.Property<ulong>("OrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("OrderId"));
+
+                    b.Property<string>("ClientId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<uint>("StatusId")
+                        .HasColumnType("int unsigned");
+
+                    b.Property<string>("SupplierId")
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("OrderId");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("ClientId");
 
-                    b.ToTable("userorder");
+                    b.HasIndex("StatusId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("UserOrders");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.dao.Measure", b =>
+            modelBuilder.Entity("WebApplication1.Data.dao.Order.Status", b =>
                 {
-                    b.Property<int>("MeasureId")
+                    b.Property<uint>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<uint>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Statuses");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Organization", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("Id"));
+
+                    b.Property<int>("INN")
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("MeasureId"));
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Organizations");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.CharKey", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CharKeys");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.CharValue", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("Id"));
+
+                    b.Property<ulong>("KeyId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KeyId");
+
+                    b.ToTable("CharValues");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.Characteristics", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("Id"));
+
+                    b.Property<ulong>("KeyId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("ProductInfoId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("ValueId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("KeyId");
+
+                    b.HasIndex("ProductInfoId")
+                        .IsUnique();
+
+                    b.HasIndex("ValueId");
+
+                    b.ToTable("Chars");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.Details.Material", b =>
+                {
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("Id"));
+
+                    b.Property<uint>("MeasureId")
+                        .HasColumnType("int unsigned");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SupplierId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MeasureId");
+
+                    b.HasIndex("SupplierId");
+
+                    b.ToTable("Material");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.Details.Measure", b =>
+                {
+                    b.Property<uint>("MeasureId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<uint>("MeasureId"));
 
                     b.Property<string>("MeasureName")
                         .IsRequired()
@@ -277,94 +525,110 @@ namespace WebApplication1.Migrations
 
                     b.HasKey("MeasureId");
 
-                    b.ToTable("measure");
+                    b.ToTable("Measures");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.dao.Offer", b =>
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.Product", b =>
                 {
-                    b.Property<long>("OfferId")
+                    b.Property<ulong>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint unsigned");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("OfferId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("Id"));
 
-                    b.Property<long>("DeliverPricePerKm")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("OfferId");
-
-                    b.HasIndex("OwnerId")
-                        .IsUnique();
-
-                    b.ToTable("offer");
-                });
-
-            modelBuilder.Entity("WebApplication1.Data.dao.Product", b =>
-                {
-                    b.Property<long>("ProductId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("ProductId"));
-
-                    b.Property<long?>("ClientOrderOrderId")
-                        .HasColumnType("bigint");
+                    b.Property<ulong?>("ClientBucketId")
+                        .HasColumnType("bigint unsigned");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("MeasureId")
-                        .HasColumnType("int");
+                    b.Property<long?>("FavouritesBucketId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<long?>("OfferId")
-                        .HasColumnType("bigint");
+                    b.Property<ulong?>("OrderId")
+                        .HasColumnType("bigint unsigned");
 
-                    b.Property<long>("PricePerQuantity")
-                        .HasColumnType("bigint");
+                    b.Property<string>("SupplierId")
+                        .HasColumnType("varchar(255)");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                    b.HasKey("Id");
 
-                    b.HasKey("ProductId");
+                    b.HasIndex("ClientBucketId");
 
-                    b.HasIndex("ClientOrderOrderId");
+                    b.HasIndex("FavouritesBucketId");
 
-                    b.HasIndex("MeasureId");
+                    b.HasIndex("OrderId");
 
-                    b.HasIndex("OfferId");
+                    b.HasIndex("SupplierId");
 
-                    b.ToTable("product");
+                    b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.dao.Status", b =>
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.ProductInfo", b =>
                 {
-                    b.Property<int>("StatusId")
+                    b.Property<ulong>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint unsigned");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<ulong>("Id"));
+
+                    b.Property<ulong?>("MaterialId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.Property<ulong>("ProductId")
+                        .HasColumnType("bigint unsigned");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MaterialId");
+
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
+                    b.ToTable("ProductInfo");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Storage.BucketCredentials", b =>
+                {
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("StatusId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Key")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<long>("OrderId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("KeyIdentifier")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-                    b.HasKey("StatusId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("OrderId")
-                        .IsUnique();
+                    b.ToTable("BucketCredentials");
+                });
 
-                    b.ToTable("status");
+            modelBuilder.Entity("WebApplication1.Data.dao.Client.Client", b =>
+                {
+                    b.HasBaseType("WebApplication1.Account");
+
+                    b.HasDiscriminator().HasValue("Client");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Supplier", b =>
+                {
+                    b.HasBaseType("WebApplication1.Account");
+
+                    b.Property<float>("Rating")
+                        .HasColumnType("float");
+
+                    b.HasDiscriminator().HasValue("Supplier");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -418,96 +682,230 @@ namespace WebApplication1.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.dao.ClientOffer", b =>
+            modelBuilder.Entity("WebApplication1.Account", b =>
                 {
-                    b.HasOne("WebApplication1.Data.dao.Offer", "Offer")
-                        .WithMany()
-                        .HasForeignKey("OfferId")
+                    b.HasOne("WebApplication1.Data.dao.Organization", "Organization")
+                        .WithMany("Accounts")
+                        .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Data.dao.ClientOrder", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication1.Account", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
-                    b.Navigation("Offer");
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Owner");
+                    b.Navigation("Organization");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.dao.ClientOrder", b =>
+            modelBuilder.Entity("WebApplication1.Data.dao.AccountGeolocation", b =>
                 {
-                    b.HasOne("WebApplication1.Account", null)
+                    b.HasOne("WebApplication1.Account", "Account")
+                        .WithOne("Geolocation")
+                        .HasForeignKey("WebApplication1.Data.dao.AccountGeolocation", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Client.ClientBucket", b =>
+                {
+                    b.HasOne("WebApplication1.Data.dao.Client.Client", "Client")
+                        .WithOne("ClientBucket")
+                        .HasForeignKey("WebApplication1.Data.dao.Client.ClientBucket", "ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Client.FavouritesBucket", b =>
+                {
+                    b.HasOne("WebApplication1.Data.dao.Client.Client", "Client")
+                        .WithOne("FavouritesBucket")
+                        .HasForeignKey("WebApplication1.Data.dao.Client.FavouritesBucket", "ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Client.OrderProduct", b =>
+                {
+                    b.HasOne("WebApplication1.Data.dao.Client.ClientBucket", "Bucket")
+                        .WithMany()
+                        .HasForeignKey("BucketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bucket");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Order.Order", b =>
+                {
+                    b.HasOne("WebApplication1.Data.dao.Client.Client", null)
                         .WithMany("Orders")
-                        .HasForeignKey("AccountId");
+                        .HasForeignKey("ClientId");
+
+                    b.HasOne("WebApplication1.Data.dao.Order.Status", "Status")
+                        .WithMany("Orders")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Data.dao.Supplier", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("SupplierId");
+
+                    b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.dao.Offer", b =>
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.CharValue", b =>
                 {
-                    b.HasOne("WebApplication1.Account", "Owner")
-                        .WithOne("Offer")
-                        .HasForeignKey("WebApplication1.Data.dao.Offer", "OwnerId");
+                    b.HasOne("WebApplication1.Data.dao.Product.CharKey", "Key")
+                        .WithMany("Values")
+                        .HasForeignKey("KeyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Owner");
+                    b.Navigation("Key");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.dao.Product", b =>
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.Characteristics", b =>
                 {
-                    b.HasOne("WebApplication1.Data.dao.ClientOrder", null)
-                        .WithMany("Products")
-                        .HasForeignKey("ClientOrderOrderId");
+                    b.HasOne("WebApplication1.Data.dao.Product.CharKey", "Key")
+                        .WithMany()
+                        .HasForeignKey("KeyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("WebApplication1.Data.dao.Measure", "Measure")
+                    b.HasOne("WebApplication1.Data.dao.Product.ProductInfo", "ProductInfo")
+                        .WithOne("Characteristics")
+                        .HasForeignKey("WebApplication1.Data.dao.Product.Characteristics", "ProductInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Data.dao.Product.CharValue", "Value")
+                        .WithMany()
+                        .HasForeignKey("ValueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Key");
+
+                    b.Navigation("ProductInfo");
+
+                    b.Navigation("Value");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.Details.Material", b =>
+                {
+                    b.HasOne("WebApplication1.Data.dao.Product.Details.Measure", "Measure")
                         .WithMany()
                         .HasForeignKey("MeasureId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WebApplication1.Data.dao.Offer", null)
-                        .WithMany("Products")
-                        .HasForeignKey("OfferId");
+                    b.HasOne("WebApplication1.Data.dao.Supplier", null)
+                        .WithMany("AvailableMaterials")
+                        .HasForeignKey("SupplierId");
 
                     b.Navigation("Measure");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.dao.Status", b =>
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.Product", b =>
                 {
-                    b.HasOne("WebApplication1.Data.dao.ClientOrder", "Order")
-                        .WithOne("Status")
-                        .HasForeignKey("WebApplication1.Data.dao.Status", "OrderId")
+                    b.HasOne("WebApplication1.Data.dao.Client.ClientBucket", null)
+                        .WithMany("Products")
+                        .HasForeignKey("ClientBucketId");
+
+                    b.HasOne("WebApplication1.Data.dao.Client.FavouritesBucket", null)
+                        .WithMany("FavouriteProducts")
+                        .HasForeignKey("FavouritesBucketId");
+
+                    b.HasOne("WebApplication1.Data.dao.Order.Order", null)
+                        .WithMany("Products")
+                        .HasForeignKey("OrderId");
+
+                    b.HasOne("WebApplication1.Data.dao.Supplier", null)
+                        .WithMany("SellingProducts")
+                        .HasForeignKey("SupplierId");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.ProductInfo", b =>
+                {
+                    b.HasOne("WebApplication1.Data.dao.Product.Details.Material", "Material")
+                        .WithMany()
+                        .HasForeignKey("MaterialId");
+
+                    b.HasOne("WebApplication1.Data.dao.Product.Product", "Product")
+                        .WithOne("Info")
+                        .HasForeignKey("WebApplication1.Data.dao.Product.ProductInfo", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.Navigation("Material");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("WebApplication1.Account", b =>
                 {
-                    b.Navigation("Offer")
-                        .IsRequired();
+                    b.Navigation("Geolocation");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Client.ClientBucket", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Client.FavouritesBucket", b =>
+                {
+                    b.Navigation("FavouriteProducts");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Order.Order", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Order.Status", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Organization", b =>
+                {
+                    b.Navigation("Accounts");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.CharKey", b =>
+                {
+                    b.Navigation("Values");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.Product", b =>
+                {
+                    b.Navigation("Info");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Product.ProductInfo", b =>
+                {
+                    b.Navigation("Characteristics");
+                });
+
+            modelBuilder.Entity("WebApplication1.Data.dao.Client.Client", b =>
+                {
+                    b.Navigation("ClientBucket");
+
+                    b.Navigation("FavouritesBucket");
 
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("WebApplication1.Data.dao.ClientOrder", b =>
+            modelBuilder.Entity("WebApplication1.Data.dao.Supplier", b =>
                 {
-                    b.Navigation("Products");
+                    b.Navigation("AvailableMaterials");
 
-                    b.Navigation("Status")
-                        .IsRequired();
-                });
+                    b.Navigation("Orders");
 
-            modelBuilder.Entity("WebApplication1.Data.dao.Offer", b =>
-                {
-                    b.Navigation("Products");
+                    b.Navigation("SellingProducts");
                 });
 #pragma warning restore 612, 618
         }

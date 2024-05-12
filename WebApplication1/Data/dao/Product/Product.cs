@@ -1,15 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using WebApplication1.Data.dao.Product.Details;
 
-namespace WebApplication1.Data.dao;
+namespace WebApplication1.Data.dao.Product;
 
-[Table("product")]
 public class Product
 {
-    [Key]
-    public long Id { get; set; }
+    public ulong Id { get; set; }
     public string Description { get; set; } = null!;
     public string Name { get; set; } = null!;
-
-    public Material Material { get; set; } = null!;
+    
+    private Image? ProductImage { get; set; }
+    public ProductInfo? Info { get; set; }
 }

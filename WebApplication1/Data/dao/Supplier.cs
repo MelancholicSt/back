@@ -1,8 +1,15 @@
-﻿namespace WebApplication1.Data.dao;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using WebApplication1.Data.dao.Product;
+using WebApplication1.Data.dao.Product.Details;
+
+namespace WebApplication1.Data.dao;
 
 public class Supplier : Account
 {
-    public List<Order> PerformingOrders { get; set; } = new();
-    public List<Material> AvailableMaterials { get; set; } = new();
+    
+    public float Rating { get; set; }
+    public List<Product.Product>? SellingProducts { get; set; } = new();
+    public List<Order.Order>? Orders { get; set; } = new();
+    public List<Material>? AvailableMaterials { get; set; } = new();
     
 }

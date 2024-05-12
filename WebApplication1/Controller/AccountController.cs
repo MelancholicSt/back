@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using WebApplication1.Data.dao;
 using WebApplication1.Data.Dto;
 
 namespace WebApplication1.Controller;
@@ -27,7 +28,7 @@ public class AccountController : ControllerBase
 
     [HttpPost("account/register")]
     [AllowAnonymous]
-    public async Task<IActionResult> Register([FromBody] RegisterAccountDto account)
+    public async Task<IActionResult> Register([FromBody] AuthAccountDto account)
     {
         _logger.LogInformation(
             $"{DateTime.Now}: Register endpoint invoked by {HttpContext.Connection.RemoteIpAddress}");
@@ -36,14 +37,14 @@ public class AccountController : ControllerBase
         Account? user = new Account()
         {
             Email = account.Email,
-            UserName = account.Login
+            UserName = account.Username,
+            Organization = new Organization()
+            {
+                Name = "Not chosen"
+            }
         };
-        var result = await _signInManager.UserManager.CreateAsync(new Account()
-        {
-            Email = account.Email,
-            UserName = account.Login
-        }, account.Password);
-     
+        var result = await _signInManager.UserManager.CreateAsync(user, account.Password);
+        
         if (!result.Succeeded)
         {
             _logger.LogError("Result is not succeeded. Got problem while creating user");
@@ -75,24 +76,29 @@ public class AccountController : ControllerBase
 
     [HttpPost("account/login")]
     [AllowAnonymous]
-    public async Task<IActionResult> Login([FromBody] AuthAccountDto authAccount)
+    public async Task<IActionResult> Login([FromBody] LoginAccountDto authAccount)
     {
         if (_signInManager.IsSignedIn(User))
         {
             return Ok();
         }
 
-        var user = await _signInManager.UserManager.FindByEmailAsync(authAccount.Email);
+        var user = await _signInManager.UserManager.FindByNameAsync(authAccount.Username);
         if (user == null)
             return BadRequest("Username or password is incorrect");
 
-        var result = await _signInManager.PasswordSignInAsync(user.UserName, authAccount.Password, false, false);
+        var result = await _signInManager.PasswordSignInAsync(authAccount.Username, authAccount.Password, false, false);
 
         if (!result.Succeeded)
             return BadRequest("Bad credentials");
         return Ok("Succeeded!");
     }
-
+    /// <summary>
+    ///  asdfasdvascva
+    /// </summary>
+    /// <param name="code"></param>
+    /// <param name="userId"></param>
+    /// <returns>asdfavasc</returns>
     [HttpGet("account/confirm-email")]
     [AllowAnonymous]
     public async Task<IActionResult> ConfirmEmail(string code, string userId)
@@ -116,10 +122,11 @@ public class AccountController : ControllerBase
             _logger.LogError("Failed to confirm email");
             return this.Problem("Confirmation failed");
         }
-
         await _signInManager.UserManager.AddClaimAsync(user, new Claim("verified", "true"));
         await _roleManager.CreateAsync(new IdentityRole("user"));
         await _signInManager.UserManager.AddToRoleAsync(user, "user");
+        Response.Cookies.Append("uid", user.Id);
+        
         return Ok($"Email: {user.Email} has been confirmed");
     }
 

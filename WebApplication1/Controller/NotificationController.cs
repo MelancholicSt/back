@@ -9,20 +9,20 @@ namespace WebApplication1.Controller;
 
 public class NotificationController : ControllerBase
 {
-    private INotificationService _notificationService;
+    private INotificationSender _notificationSender;
     private Logger<NotificationController> _notificationLogger;
 
-    public NotificationController(INotificationService notificationService,
+    public NotificationController(INotificationSender notificationSender,
         Logger<NotificationController> notificationLogger)
     {
-        _notificationService = notificationService;
+        _notificationSender = notificationSender;
         _notificationLogger = notificationLogger;
     }
 
     [HttpPost("notify/user/{userId}")]
     public async Task<IActionResult> SendNotification(string userId, [FromBody] string message)
     {
-        await _notificationService.NotifyUser(userId, message);
+        await _notificationSender.NotifyUser(userId, message);
         return Ok();
     }
 
@@ -32,7 +32,7 @@ public class NotificationController : ControllerBase
         await Task.Run(async () =>
         {
             await Task.Delay(seconds / 1000);
-            await _notificationService.NotifyUser(userId, message);
+            await _notificationSender.NotifyUser(userId, message);
         });
         return Ok();
     }
@@ -40,7 +40,7 @@ public class NotificationController : ControllerBase
     [HttpPost("notify/managers")]
     public async Task<IActionResult> SendToManagers([FromBody] string message)
     {
-        await _notificationService.NotifyAllManagersAsync(message);
+        await _notificationSender.NotifyAllManagersAsync(message);
         _notificationLogger.Log(LogLevel.Information,
             $"{HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)} notified all managers with message:\n\t{message} ");
         return Ok();

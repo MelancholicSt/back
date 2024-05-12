@@ -1,9 +1,15 @@
-﻿namespace WebApplication1.Data.dao;
-
+﻿namespace WebApplication1.Data.dao.Client;
+using Product;
 public class ClientBucket
 {
-    public long Id { get; set; }
-    public List<BucketProduct> Products { get; set; } = new ();
+    public ulong Id { get; set; }
+    /// <summary>
+    /// Products in bucket
+    /// </summary>
+    public List<Product>? Products { get; set; }
+    /// <summary>
+    /// Owner of this bucket
+    /// </summary>
     public Client Client { get; set; } = null!;
     public string ClientId { get; set; } = null!;
 }
