@@ -6,16 +6,16 @@ using WebApplication1.Data.dao;
 using WebApplication1.Data.dao.Client;
 using WebApplication1.Data.dao.Order;
 using WebApplication1.Data.dao.Product;
+using WebApplication1.Data.dao.Product.Chars;
 using WebApplication1.Data.dao.Product.Details;
 using WebApplication1.Data.dao.Storage;
 
 namespace WebApplication1;
 
-public class DbContext : IdentityDbContext<Account>
+public sealed class DbContext : IdentityDbContext<Account>
 {
 
     public DbSet<FavouritesBucket> FavouritesBuckets { get; set; }
-    public DbSet<OrderProduct> BucketProducts { get; set; }
     public DbSet<ClientBucket> ClientBuckets { get; set; }
     public DbSet<BucketCredentials> BucketCredentials { get; set; }
     public DbSet<Characteristics> Chars { get; set; }
@@ -34,6 +34,7 @@ public class DbContext : IdentityDbContext<Account>
 
     public DbContext(DbContextOptions<DbContext> options) : base(options)
     {
+        Database.Migrate();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)

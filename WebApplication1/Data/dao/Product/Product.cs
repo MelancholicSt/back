@@ -9,6 +9,6 @@ public class Product
     public string Description { get; set; } = null!;
     public string Name { get; set; } = null!;
     
-    private Image? ProductImage { get; set; }
+    private List<Image>? ProductImages { get; set; }
     public ProductInfo? Info { get; set; }
 }

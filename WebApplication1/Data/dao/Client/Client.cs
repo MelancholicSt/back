@@ -3,7 +3,10 @@
 namespace WebApplication1.Data.dao.Client;
 using Order;
 
-
+/// <summary>
+/// Entity which provides functionality of role "Client". Kind of extension of account entity
+/// Might be that I'll change concept to other. 
+/// </summary>
 public class Client : Account
 {
     /// <summary>

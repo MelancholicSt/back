@@ -1,4 +1,7 @@
-﻿using System.Net;
+﻿using System.Data;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
@@ -15,7 +18,9 @@ public class CloudImageService : ICloudImageService
     public CloudImageService(DbContext context)
     {
         _context = context;
-        BucketCredentials credentials = _context.BucketCredentials.First(x => x.Id == 1);
+        BucketCredentials? credentials = _context.BucketCredentials.FirstOrDefault(x => x.Id == 1);
+        if (credentials == null)
+            throw new DataException("Credentials not found");
         var creds = new BasicAWSCredentials(credentials.KeyIdentifier, credentials.Key);
         var config = new AmazonS3Config()
         {
@@ -24,22 +29,22 @@ public class CloudImageService : ICloudImageService
         _client = new AmazonS3Client(creds, config);
     }
 
-    public async Task<bool> UploadFileAsync(IFormFile file)
+    public async Task<bool> UploadFileAsync(IFormFile file, string? rootPath)
     {
-        if (_context.Images.FirstOrDefault(x => x.FileName == file.FileName) != null)
-            return false;
-
         Guid imgGuid = Guid.NewGuid();
+        string extensionName = Path.GetExtension(file.FileName);
+        var imgPath = await GetFormattedImagePathAsync(imgGuid.ToString(), extensionName);
+
         PutObjectRequest request = new PutObjectRequest
         {
             BucketName = "marketplace-builder",
             CannedACL = S3CannedACL.PublicRead,
-            Key = "images/" + imgGuid + "-" + file.FileName
+            Key = $"{rootPath}/{imgPath}"
         };
         _context.Images.Add(new Image
         {
             Guid = imgGuid.ToString(),
-            FileName = file.FileName
+            Extension = extensionName
         });
 
         using (Stream inputStream = file.OpenReadStream())
@@ -52,23 +57,24 @@ public class CloudImageService : ICloudImageService
         return true;
     }
 
-    public async Task<bool> DeleteFileAsync(string guid)
+
+    public async Task<bool> DeleteFileAsync(string guid, string? rootPath)
     {
         Image? image = _context.Images.FirstOrDefault(x => x.Guid == guid);
         if (image == null)
             return false;
-
+        var imgPath = await GetFormattedImagePathAsync(guid, image.Extension);
         DeleteObjectRequest request = new DeleteObjectRequest
         {
             BucketName = "marketplace-builder",
-            Key = "images/" + image.Guid + "-" + image.FileName
+            Key = $"{rootPath}/{imgPath}"
         };
-
-        var response = await _client.DeleteObjectAsync(request);
+        await _client.DeleteObjectAsync(request);
         return true;
     }
+    
 
-    public async Task<byte[]?> DownloadFileAsync(string guid)
+    public async Task<byte[]?> DownloadFileAsync(string guid, string? rootPath)
     {
         Image? image = _context.Images.FirstOrDefault(x => x.Guid == guid);
         if (image == null)
@@ -77,7 +83,7 @@ public class CloudImageService : ICloudImageService
         GetObjectRequest request = new GetObjectRequest
         {
             BucketName = "marketplace-builder",
-            Key = "images/" + image.Guid + "-" + image.FileName
+            Key = $"{rootPath}/{await GetFormattedImagePathAsync(guid, image.Extension)}"
         };
         using var response = await _client.GetObjectAsync(request);
         using MemoryStream ms = new MemoryStream();
@@ -88,5 +94,24 @@ public class CloudImageService : ICloudImageService
         }
 
         throw new BadHttpRequestException("On download file");
+    }
+
+    private async Task<string> GetFormattedImagePathAsync(string guid, string imageExtension)
+    {
+        var folderName = await GetImageFolderNameAsync(guid);
+        var imageName = GetImageName(guid);
+        return $"{folderName}/{imageName}.{imageExtension}";
+    }
+
+    private async Task<string> GetImageFolderNameAsync(string guid)
+    {
+        using MD5 md5 = MD5.Create();
+        using MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(guid));
+        return Convert.ToHexString(await md5.ComputeHashAsync(stream));
+    }
+
+    private string GetImageName(string guid)
+    {
+        return guid.Substring(guid.Length - 6);
     }
 }

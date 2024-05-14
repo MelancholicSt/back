@@ -8,7 +8,6 @@ public class AccountGeolocation
 {
     public ulong Id { get; set; }
     
-    public Account Account { get; set; } = null!;
     public string Country { get; set; } = null!;
     public string City { get; set; } = null!;
     public string? LocalAddress { get; set; } 

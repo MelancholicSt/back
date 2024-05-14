@@ -5,23 +5,26 @@ using WebApplication1.Service.ImageService;
 namespace WebApplication1.Controller;
 
 [ApiController]
+[Route("[controller]")]
 public class ImagesController : ControllerBase
 {
     private readonly ICloudImageService _imageService;
+    private readonly DbContext _context;
 
-    public ImagesController(ICloudImageService imageService)
+    public ImagesController(ICloudImageService imageService, DbContext context)
     {
         _imageService = imageService;
+        _context = context;
     }
 
-    [HttpGet("get")]
+    [HttpGet("download")]
     public async Task<IActionResult> GetImage(string guid)
     {
         var content = await _imageService.DownloadFileAsync(guid);
         if (content == null)
             return NotFound("File not found");
-        
-        return File(content, "application/octet-stream");
+        var imageExtensionName = await _context.Images.FindAsync(guid);   
+        return File(content, "image/jpeg");
     }
 
     [HttpDelete("delete")]
@@ -36,7 +39,9 @@ public class ImagesController : ControllerBase
     [HttpPost("upload")]
     public async Task<IActionResult> UploadImage(IFormFile image)
     {
-        if(await _imageService.UploadFileAsync(image))
+        if (!image.FileName.Contains(".jpg"))
+            return BadRequest("Unsupported image file format sent. Supported formats: .jpg");
+        if (await _imageService.UploadFileAsync(image))
             return Ok();
         
         return BadRequest("File already exists");

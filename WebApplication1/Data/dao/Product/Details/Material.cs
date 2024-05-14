@@ -4,7 +4,7 @@ public class Material
 {
     public ulong Id { get; set; }
     public string Name { get; set; } = null!;
-    public Measure Measure { get; set; } = new Measure
+    public Measure Measure { get; set; } = new()
     {
         MeasureName = "Thing"
     };

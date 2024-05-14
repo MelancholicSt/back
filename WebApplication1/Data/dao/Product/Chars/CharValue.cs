@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Data.dao.Product;
+﻿namespace WebApplication1.Data.dao.Product.Chars;
 
 public class CharValue
 {

@@ -8,5 +8,6 @@ public class Image
 {
     [Key]
     public string Guid { get; set; } = null!;
-    public string FileName { get; set; } = null!;
+
+    public string Extension { get; set; } = null!;
 }
