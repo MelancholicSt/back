@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.Data.dao.Storage;
+﻿namespace WebApplication1.Data.dao;
 
 public class BucketCredentials
 {

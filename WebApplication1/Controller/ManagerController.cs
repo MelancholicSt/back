@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using WebApplication1.Data.dao;
+using WebApplication1.Data.dao.Identity;
 
 namespace WebApplication1.Controller;
 

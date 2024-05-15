@@ -8,6 +8,8 @@ public class ProductInfo
     public ulong Id { get; set; }
     public Characteristics? Characteristics { get; set; }
     public Material? Material { get; set; }
+    public Category Category { get; set; } = null!;
+    public ulong CategoryId { get; set; }
     
     public Product Product { get; set; } = null!;
     public ulong ProductId { get; set; }

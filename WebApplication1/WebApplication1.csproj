@@ -11,6 +11,7 @@
 
     <ItemGroup>
         <PackageReference Include="AWSSDK.S3" Version="3.7.307.28" />
+        <PackageReference Include="DuoVia.FuzzyStrings" Version="2.1.0" />
         <PackageReference Include="InstantAPIs" Version="0.2.0" />
         <PackageReference Include="MailKit" Version="4.5.0" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.4" />
@@ -34,6 +35,10 @@
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Service\CategoryService\" />
     </ItemGroup>
 
 </Project>

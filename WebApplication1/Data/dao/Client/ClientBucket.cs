@@ -6,9 +6,12 @@ public class ClientBucket
 {
     public ulong Id { get; set; }
 
+    public Client Client { get; set; } = null!;
+    public string? ClientId { get; set; }
+    
     /// <summary>
     /// Products in bucket
     /// </summary>
-    public List<Product>? Products { get; set; } = new();
+    public List<Product>? Products { get;} = new();
     
 }

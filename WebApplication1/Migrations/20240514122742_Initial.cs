@@ -88,32 +88,6 @@ namespace WebApplication1.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "ClientBuckets",
-                columns: table => new
-                {
-                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClientBuckets", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "FavouritesBuckets",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FavouritesBuckets", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "Images",
                 columns: table => new
                 {
@@ -231,8 +205,6 @@ namespace WebApplication1.Migrations
                     OrganizationId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
                     Discriminator = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    FavouritesBucketId = table.Column<long>(type: "bigint", nullable: true),
-                    ClientBucketId = table.Column<ulong>(type: "bigint unsigned", nullable: true),
                     Rating = table.Column<float>(type: "float", nullable: true),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -264,16 +236,6 @@ namespace WebApplication1.Migrations
                         name: "FK_AspNetUsers_AccountGeolocations_GeolocationId",
                         column: x => x.GeolocationId,
                         principalTable: "AccountGeolocations",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_ClientBuckets_ClientBucketId",
-                        column: x => x.ClientBucketId,
-                        principalTable: "ClientBuckets",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_FavouritesBuckets_FavouritesBucketId",
-                        column: x => x.FavouritesBucketId,
-                        principalTable: "FavouritesBuckets",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_AspNetUsers_Organizations_OrganizationId",
@@ -414,6 +376,46 @@ namespace WebApplication1.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "ClientBuckets",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ClientId = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientBuckets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClientBuckets_AspNetUsers_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "FavouritesBuckets",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ClientId = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FavouritesBuckets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FavouritesBuckets_AspNetUsers_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Material",
                 columns: table => new
                 {
@@ -486,8 +488,6 @@ namespace WebApplication1.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClientBucketId = table.Column<ulong>(type: "bigint unsigned", nullable: true),
-                    FavouritesBucketId = table.Column<long>(type: "bigint", nullable: true),
                     OrderId = table.Column<ulong>(type: "bigint unsigned", nullable: true),
                     SupplierId = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
@@ -501,20 +501,60 @@ namespace WebApplication1.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Products_ClientBuckets_ClientBucketId",
-                        column: x => x.ClientBucketId,
-                        principalTable: "ClientBuckets",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Products_FavouritesBuckets_FavouritesBucketId",
-                        column: x => x.FavouritesBucketId,
-                        principalTable: "FavouritesBuckets",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Products_UserOrders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "UserOrders",
                         principalColumn: "OrderId");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "ClientBucketProduct",
+                columns: table => new
+                {
+                    ClientBucketsId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
+                    ProductsId = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientBucketProduct", x => new { x.ClientBucketsId, x.ProductsId });
+                    table.ForeignKey(
+                        name: "FK_ClientBucketProduct_ClientBuckets_ClientBucketsId",
+                        column: x => x.ClientBucketsId,
+                        principalTable: "ClientBuckets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClientBucketProduct_Products_ProductsId",
+                        column: x => x.ProductsId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "FavouritesBucketProduct",
+                columns: table => new
+                {
+                    FavouriteProductsId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
+                    FavouritesBucketsId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FavouritesBucketProduct", x => new { x.FavouriteProductsId, x.FavouritesBucketsId });
+                    table.ForeignKey(
+                        name: "FK_FavouritesBucketProduct_FavouritesBuckets_FavouritesBucketsId",
+                        column: x => x.FavouritesBucketsId,
+                        principalTable: "FavouritesBuckets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FavouritesBucketProduct_Products_FavouriteProductsId",
+                        column: x => x.FavouriteProductsId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -582,16 +622,6 @@ namespace WebApplication1.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_ClientBucketId",
-                table: "AspNetUsers",
-                column: "ClientBucketId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_FavouritesBucketId",
-                table: "AspNetUsers",
-                column: "FavouritesBucketId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_GeolocationId",
                 table: "AspNetUsers",
                 column: "GeolocationId");
@@ -623,6 +653,28 @@ namespace WebApplication1.Migrations
                 column: "KeyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ClientBucketProduct_ProductsId",
+                table: "ClientBucketProduct",
+                column: "ProductsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClientBuckets_ClientId",
+                table: "ClientBuckets",
+                column: "ClientId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FavouritesBucketProduct_FavouritesBucketsId",
+                table: "FavouritesBucketProduct",
+                column: "FavouritesBucketsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FavouritesBuckets_ClientId",
+                table: "FavouritesBuckets",
+                column: "ClientId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Material_MeasureId",
                 table: "Material",
                 column: "MeasureId");
@@ -647,16 +699,6 @@ namespace WebApplication1.Migrations
                 table: "ProductInfo",
                 column: "ProductId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_ClientBucketId",
-                table: "Products",
-                column: "ClientBucketId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Products_FavouritesBucketId",
-                table: "Products",
-                column: "FavouritesBucketId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_OrderId",
@@ -706,6 +748,12 @@ namespace WebApplication1.Migrations
                 name: "BucketCredentials");
 
             migrationBuilder.DropTable(
+                name: "ClientBucketProduct");
+
+            migrationBuilder.DropTable(
+                name: "FavouritesBucketProduct");
+
+            migrationBuilder.DropTable(
                 name: "Images");
 
             migrationBuilder.DropTable(
@@ -713,6 +761,12 @@ namespace WebApplication1.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "ClientBuckets");
+
+            migrationBuilder.DropTable(
+                name: "FavouritesBuckets");
 
             migrationBuilder.DropTable(
                 name: "Chars");
@@ -743,12 +797,6 @@ namespace WebApplication1.Migrations
 
             migrationBuilder.DropTable(
                 name: "AccountGeolocations");
-
-            migrationBuilder.DropTable(
-                name: "ClientBuckets");
-
-            migrationBuilder.DropTable(
-                name: "FavouritesBuckets");
 
             migrationBuilder.DropTable(
                 name: "Organizations");

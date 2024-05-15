@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using WebApplication1.Data.dao.Product;
+using WebApplication1.Data.dao.Identity;
 using WebApplication1.Data.dao.Product.Details;
+using static WebApplication1.Data.dao.Product.Product;
 
 namespace WebApplication1.Data.dao;
 

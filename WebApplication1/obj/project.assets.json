@@ -44,6 +44,15 @@
           }
         }
       },
+      "DuoVia.FuzzyStrings/2.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.1/DuoVia.FuzzyStrings.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/DuoVia.FuzzyStrings.dll": {}
+        }
+      },
       "Humanizer.Core/2.14.1": {
         "type": "package",
         "compile": {
@@ -1289,6 +1298,20 @@
         "lib/netstandard2.0/BouncyCastle.Cryptography.dll",
         "lib/netstandard2.0/BouncyCastle.Cryptography.xml",
         "packageIcon.png"
+      ]
+    },
+    "DuoVia.FuzzyStrings/2.1.0": {
+      "sha512": "xkGo6s2x3ISS6bLgxCW6lcrn0nxMbsuPuG8N55fk1g5TFkIVqWDlj0IVWQIW7anB0SmCWlPjACPHoFpw8gLJfQ==",
+      "type": "package",
+      "path": "duovia.fuzzystrings/2.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "duovia.fuzzystrings.2.1.0.nupkg.sha512",
+        "duovia.fuzzystrings.nuspec",
+        "lib/net462/DuoVia.FuzzyStrings.dll",
+        "lib/netstandard2.0/DuoVia.FuzzyStrings.dll",
+        "lib/netstandard2.1/DuoVia.FuzzyStrings.dll"
       ]
     },
     "Humanizer.Core/2.14.1": {
@@ -3341,6 +3364,7 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "AWSSDK.S3 >= 3.7.307.28",
+      "DuoVia.FuzzyStrings >= 2.1.0",
       "InstantAPIs >= 0.2.0",
       "MailKit >= 4.5.0",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 8.0.4",
@@ -3401,6 +3425,10 @@
           "AWSSDK.S3": {
             "target": "Package",
             "version": "[3.7.307.28, )"
+          },
+          "DuoVia.FuzzyStrings": {
+            "target": "Package",
+            "version": "[2.1.0, )"
           },
           "InstantAPIs": {
             "target": "Package",

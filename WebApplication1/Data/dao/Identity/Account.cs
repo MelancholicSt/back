@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using WebApplication1.Data.dao;
 
-namespace WebApplication1;
+namespace WebApplication1.Data.dao.Identity;
 
 public class Account : IdentityUser
 {

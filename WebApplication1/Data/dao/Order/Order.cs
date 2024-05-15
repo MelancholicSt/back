@@ -8,11 +8,13 @@ public class Order
 {
     [Key]
     public ulong OrderId { get; set; }
+
+    public Queue<Status> Statuses { get; } = new();
+
+    public Client.Client Client { get; set; } = null!;
+    public string ClientId { get; set; }
     
-    public Status? Status { get; set; } = new ()
-    {
-        Name = "New"
-    };
-    public uint StatusId { get; set; }
-    public List<Product>? Products { get; set; } = new ();
+    public Supplier? Supplier { get; set; }
+    public string? SupplierId { get; set; }
+    public List<Product> Products { get; } = new ();
 }

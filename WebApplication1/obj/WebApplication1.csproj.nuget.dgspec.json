@@ -49,6 +49,10 @@
               "target": "Package",
               "version": "[3.7.307.28, )"
             },
+            "DuoVia.FuzzyStrings": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
             "InstantAPIs": {
               "target": "Package",
               "version": "[0.2.0, )"

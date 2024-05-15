@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using WebApplication1.Data.dao.Identity;
 
 namespace WebApplication1.Data.dao.Client;
 using Order;
@@ -16,9 +17,10 @@ public class Client : Account
     /// <summary>
     /// Storage which reperesents products for new order
     /// </summary>
-    public ClientBucket? ClientBucket { get; set; } 
+    public ClientBucket? ClientBucket { get; set; }
+
     /// <summary>
     /// All client orders. Not depended on state
     /// </summary>
-    public List<Order>? Orders { get; set; }
+    public List<Order>? Orders { get; } = new();
 }

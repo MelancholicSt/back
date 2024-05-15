@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data.dao;
+using WebApplication1.Data.dao.Identity;
 using WebApplication1.Data.dao.Product;
 
 namespace WebApplication1.Controller;

@@ -1,12 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "24dF+LcnqXGRyWeNXQNghWNoBOI+E7ZHPD+RqyncacNfiOlHhW2pfpG/OiKiXr4z6Zp1qdW8urp8M/MHv4gAFg==",
+  "dgSpecHash": "kkuLtkrLvKx9htD1vNMp6vV7MsnMrfEQMvzp61mC8ydfzPhN2XQy5Qee8ohWlpafpRJSVdnPACQ70FVK8bURPA==",
   "success": true,
   "projectFilePath": "C:\\Users\\DRainDev\\RiderProjects\\WebApplication1\\WebApplication1\\WebApplication1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\DRainDev\\.nuget\\packages\\awssdk.core\\3.7.303.26\\awssdk.core.3.7.303.26.nupkg.sha512",
     "C:\\Users\\DRainDev\\.nuget\\packages\\awssdk.s3\\3.7.307.28\\awssdk.s3.3.7.307.28.nupkg.sha512",
     "C:\\Users\\DRainDev\\.nuget\\packages\\bouncycastle.cryptography\\2.3.0\\bouncycastle.cryptography.2.3.0.nupkg.sha512",
+    "C:\\Users\\DRainDev\\.nuget\\packages\\duovia.fuzzystrings\\2.1.0\\duovia.fuzzystrings.2.1.0.nupkg.sha512",
     "C:\\Users\\DRainDev\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\DRainDev\\.nuget\\packages\\instantapis\\0.2.0\\instantapis.0.2.0.nupkg.sha512",
     "C:\\Users\\DRainDev\\.nuget\\packages\\mailkit\\4.5.0\\mailkit.4.5.0.nupkg.sha512",

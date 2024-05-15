@@ -6,7 +6,6 @@ using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using WebApplication1.Data.dao;
-using WebApplication1.Data.dao.Storage;
 
 namespace WebApplication1.Service.ImageService;
 
