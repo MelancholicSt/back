@@ -4,27 +4,36 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using WebApplication1.Data.dao;
 using WebApplication1.Data.dao.Identity;
 using WebApplication1.Data.Dto;
+using WebApplication1.Service.ImageService;
 
 namespace WebApplication1.Controller;
 
 [ApiController]
+[Route("market/account/")]
 public class AccountController : ControllerBase
 {
     private SignInManager<Account> _signInManager;
     private RoleManager<IdentityRole> _roleManager;
     private IEmailSender _emailSender;
     private ILogger<AccountController> _logger;
+    private ICloudImageService _imageService;
+    private DbContext _context;
 
     public AccountController(SignInManager<Account> signInManager, IEmailSender emailSender,
-        UserManager<Account> userManager, ILogger<AccountController> logger, RoleManager<IdentityRole> roleManager)
+        UserManager<Account> userManager, ILogger<AccountController> logger, RoleManager<IdentityRole> roleManager,
+        ICloudImageService imageService, DbContext context)
     {
         _signInManager = signInManager;
         _emailSender = emailSender;
         _logger = logger;
         _roleManager = roleManager;
+        _imageService = imageService;
+        _context = context;
     }
 
     [HttpPost("account/register")]
@@ -33,19 +42,20 @@ public class AccountController : ControllerBase
     {
         _logger.LogInformation(
             $"{DateTime.Now}: Register endpoint invoked by {HttpContext.Connection.RemoteIpAddress}");
-
         _logger.LogInformation($"{DateTime.Now} Trying to create user");
-        Account? user = new Account()
+
+        Account? user = new Account
         {
             Email = account.Email,
             UserName = account.Username,
-            Organization = new Organization()
+            Organization = new Organization
             {
                 Name = "Not chosen"
             }
         };
+
         var result = await _signInManager.UserManager.CreateAsync(user, account.Password);
-        
+
         if (!result.Succeeded)
         {
             _logger.LogError("Result is not succeeded. Got problem while creating user");
@@ -53,6 +63,7 @@ public class AccountController : ControllerBase
                 _logger.LogTrace(error.Description);
             return BadRequest();
         }
+
         user = await _signInManager.UserManager.FindByEmailAsync(user.Email);
         _logger.LogInformation(
             $"User has been creating in: {DateTime.Now} by {HttpContext.Connection.RemoteIpAddress}");
@@ -75,7 +86,7 @@ public class AccountController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("account/login")]
+    [HttpPost("login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginAccountDto authAccount)
     {
@@ -94,15 +105,40 @@ public class AccountController : ControllerBase
             return BadRequest("Bad credentials");
         return Ok("Succeeded!");
     }
+    
+    [HttpPost("image/set")]
+    [Authorize("Confirmed")]
+    public async Task<IActionResult> SetAccountImage(IFormFile file)
+    {
+        await _imageService.UploadFileAsync(file, "account");
+        var userId = User.FindFirstValue("uid");
+
+        var user = await _signInManager.UserManager.Users.FirstAsync(x => x.Id == userId);
+
+        user.ProfileImage = await _context.Images.FirstAsync(x => x.Name == file.Name);
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [HttpGet("info")]
+    [Authorize("Confirmed")]
+    public async Task<IActionResult> GetAccountInfo()
+    {
+        var userId = User.FindFirstValue("uid");
+        var account = await _signInManager.UserManager.FindByIdAsync(userId);
+
+        return Ok(JsonConvert.SerializeObject(account.AccountInfo));
+    }
     /// <summary>
     ///  asdfasdvascva
     /// </summary>
     /// <param name="code"></param>
     /// <param name="userId"></param>
+    ///
     /// <returns>asdfavasc</returns>
-    [HttpGet("account/confirm-email")]
+    [HttpGet("confirm-email")]
     [AllowAnonymous]
-    public async Task<IActionResult> ConfirmEmail(string code, string userId)
+    public async Task<IActionResult> ConfirmEmail(string? code, string? userId)
     {
         if (userId == null || code == null)
         {
@@ -123,45 +159,11 @@ public class AccountController : ControllerBase
             _logger.LogError("Failed to confirm email");
             return this.Problem("Confirmation failed");
         }
-        await _signInManager.UserManager.AddClaimAsync(user, new Claim("verified", "true"));
-        await _roleManager.CreateAsync(new IdentityRole("user"));
-        await _signInManager.UserManager.AddToRoleAsync(user, "user");
+
+        await _signInManager.UserManager.AddClaimAsync(user, new Claim("confirmedEmail", "true"));
+
         Response.Cookies.Append("uid", user.Id);
-        
+
         return Ok($"Email: {user.Email} has been confirmed");
-    }
-
-    [HttpPost("account/set-role")]
-    [Authorize(Roles = "user")]
-    public async Task<IActionResult> SetAccountRole(string role)
-    {
-        if (!await _roleManager.RoleExistsAsync(role))
-        {
-            if (new[] { "manager", "client", "supplier" }.Contains(role))
-                await _roleManager.CreateAsync(new IdentityRole(role));
-            else
-                return BadRequest("Role not found");
-        }
-        
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId == null || !User.Identity.IsAuthenticated)
-            return BadRequest("User error");
-        var user = await _signInManager.UserManager.FindByIdAsync(userId);
-        if (User.Claims.Contains(new Claim("HasRole", "true")))
-            return BadRequest("User already has role");
-        
-        var result = await _signInManager.UserManager.AddToRoleAsync(user, role);
-        if (!result.Succeeded)
-        {
-            foreach (var error in result.Errors)
-            {
-                _logger.LogError(error.Description);
-            }
-
-            return Problem();
-        }
-
-        await _signInManager.UserManager.AddClaimAsync(user, new Claim("HasRole", "true"));
-        return Ok();
     }
 }

@@ -1,0 +1,47 @@
+﻿{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "Client API",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.server.test/v1"
+    }
+  ],
+  "components": {
+    "parameters": {
+      "name": {
+        "name": "name",
+        "in": "query",
+        "required": true,
+        "description": ""
+      }
+    }
+    
+  },
+  "paths": {
+    "/client/orders/all": {
+      "get": {
+        "description": "Returns all orders whose are owned by client",
+        "parameters": [ ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/name": {
+      "get": {
+        "description": "",
+        "parameters": [ ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}

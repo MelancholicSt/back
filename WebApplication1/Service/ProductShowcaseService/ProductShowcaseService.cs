@@ -52,14 +52,14 @@ public class ProductShowcaseService : IProductShowcaseService
         if (product == null)
             return false;
 
-        product.Description = description;
+
         await _context.SaveChangesAsync();
 
         return true;
     }
 
 
-    public async Task<bool> AddProductImage(ulong id, IFormFile file)
+    public async Task<bool> SetMainProductImage(ulong id, IFormFile file)
     {
         Product? product = await _context.Products.FindAsync(id);
         if (product == null)
@@ -67,7 +67,7 @@ public class ProductShowcaseService : IProductShowcaseService
 
         await _imageService.UploadFileAsync(file, "products");
         Image image = await _context.Images.FirstOrDefaultAsync(x => x.Name == file.Name);
-        product.Images!.Add(image);
+        product.MainImage = image;
         await _context.SaveChangesAsync();
         return true;
     }
@@ -82,7 +82,7 @@ public class ProductShowcaseService : IProductShowcaseService
         if (image == null)
             return false;
 
-        product.Images.Remove(image);
+        product.Info.Images.Remove(image);
         await _context.SaveChangesAsync();
         return true;
     }

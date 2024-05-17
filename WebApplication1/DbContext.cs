@@ -9,11 +9,13 @@ using WebApplication1.Data.dao.Order;
 using WebApplication1.Data.dao.Product;
 using WebApplication1.Data.dao.Product.Chars;
 using WebApplication1.Data.dao.Product.Details;
+using WebApplication1.Data.dao.Supplier;
 
 namespace WebApplication1;
 
 public sealed class DbContext : IdentityDbContext<Account>
 {
+    public DbSet<Offer> Offers { get; set; }
     public DbSet<FavouritesBucket> FavouritesBuckets { get; set; }
     public DbSet<ClientBucket> ClientBuckets { get; set; }
     public DbSet<BucketCredentials> BucketCredentials { get; set; }
@@ -21,13 +23,16 @@ public sealed class DbContext : IdentityDbContext<Account>
     public DbSet<CharAttributeValue> CharKeys { get; set; }
     public DbSet<CharAttributeName> CharValues { get; set; }
     public DbSet<Status> Statuses { get; set; }
+    public DbSet<DeliveryInfo> DeliveryInfos { get; set; }
+    public DbSet<Material> Materials { get; set; }
     public DbSet<AccountGeolocation> AccountGeolocations { get; set; }
     public DbSet<Organization> Organizations { get; set; }
-    public DbSet<Category?> Categories { get; set; }
+    public DbSet<Category> Categories { get; set; }
     public DbSet<Product> Products { get; set; }
+    public DbSet<ProductSellInfo> SellInfos { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<Client> Clients { get; set; }
-    public DbSet<Order> UserOrders { get; set; }
+    public DbSet<Order> Orders { get; set; }
     public DbSet<Measure> Measures { get; set; }
     public DbSet<Image> Images { get; set; }
 
@@ -45,10 +50,28 @@ public sealed class DbContext : IdentityDbContext<Account>
             .HasForeignKey<ClientBucket>(x => x.ClientId);
         builder.Entity<Client>().HasOne(x => x.FavouritesBucket).WithOne(x => x.Client)
             .HasForeignKey<FavouritesBucket>(x => x.ClientId);
-        builder.Entity<Product>()
+
+
+        builder.Entity<ProductInfo>()
             .HasMany(x => x.Images)
-            .WithOne(x => x.Product)
-            .HasForeignKey(x => x.ProductId)
+            .WithOne(x => x.ProductInfo)
+            .HasForeignKey(x => x.ProductInfoId)
             .IsRequired(false);
+
+        builder.Entity<Supplier>()
+            .HasMany(x => x.AvailableMaterials)
+            .WithMany(x => x.Suppliers);
+        builder.Entity<Supplier>()
+            .HasMany(x => x.PerformingOrders)
+            .WithOne(x => x.Supplier)
+            .HasForeignKey(x => x.SupplierId);
+
+
+        builder.Entity<FavouritesBucket>()
+            .HasMany(x => x.FavouriteProducts)
+            .WithMany(x => x.FavouritesBuckets);
+        builder.Entity<ClientBucket>()
+            .HasMany(x => x.Products)
+            .WithMany(x => x.ClientBuckets);
     }
 }

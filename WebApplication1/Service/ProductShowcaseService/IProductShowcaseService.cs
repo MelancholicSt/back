@@ -11,7 +11,7 @@ public interface IProductShowcaseService
     public Task<bool> EditProductName(ulong id, string name);
     public Task<bool> EditProductDescription(ulong id, string description);
     
-    public Task<bool> AddProductImage(ulong id, IFormFile file);
+    public Task<bool> SetMainProductImage(ulong id, IFormFile file);
     public Task<bool> DeleteProductImage(ulong id, string imageGuid);
 
     public Task<Product?> GetProductById(ulong id);

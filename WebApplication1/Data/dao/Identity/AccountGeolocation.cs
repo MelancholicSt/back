@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace WebApplication1.Data.dao;
+﻿namespace WebApplication1.Data.dao.Identity;
 /// <summary>
 /// Gets geo of any account, not depended on role
 /// </summary>

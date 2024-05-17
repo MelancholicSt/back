@@ -38,6 +38,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Controller\Native\" />
+      <Folder Include="Data\dao\Supplier\OrderOffer\" />
+      <Folder Include="Docs\Users\" />
+      <Folder Include="Docs\Utlis\" />
       <Folder Include="Service\CategoryService\" />
     </ItemGroup>
 

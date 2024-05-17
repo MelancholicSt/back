@@ -33,7 +33,7 @@ public class CloudImageService : ICloudImageService
         Guid imgGuid = Guid.NewGuid();
         string extensionName = Path.GetExtension(file.FileName);
         var imgPath = await GetFormattedImagePathAsync(imgGuid.ToString(), extensionName);
-
+        
         PutObjectRequest request = new PutObjectRequest
         {
             BucketName = "marketplace-builder",
@@ -43,7 +43,8 @@ public class CloudImageService : ICloudImageService
         _context.Images.Add(new Image
         {
             Guid = imgGuid.ToString(),
-            Extension = extensionName
+            Extension = extensionName,
+            Name = file.Name
         });
 
         using (Stream inputStream = file.OpenReadStream())

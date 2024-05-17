@@ -6,7 +6,7 @@ using WebApplication1.Service;
 namespace WebApplication1.Controller;
 
 [ApiController]
-
+[Route("api/notification")]
 public class NotificationController : ControllerBase
 {
     private INotificationSender _notificationSender;
@@ -45,5 +45,11 @@ public class NotificationController : ControllerBase
             $"{HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)} notified all managers with message:\n\t{message} ");
         return Ok();
     }
-    
+
+    [HttpPost("notify/suppliers")]
+    public async Task<IActionResult> SendToSuppliers([FromBody] string message)
+    {
+        await _notificationSender.NotifyAllSuppliers(message);
+        return Ok();
+    }
 }

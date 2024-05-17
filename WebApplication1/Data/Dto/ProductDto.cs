@@ -4,6 +4,7 @@ public class ProductDto
 {
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
-    public string SupplierId { get; set; }
-    public MaterialDto Material { get; set; } 
+    public string CategoryName { get; set; } = null!;
+    public string MaterialName { get; set; } = null!;
+    public string? MeasureName { get; set; }
 }

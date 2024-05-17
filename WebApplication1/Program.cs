@@ -70,7 +70,23 @@ builder.Services.AddIdentity<Account, IdentityRole>(o =>
 
 
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(x =>
+{
+    x.AddPolicy("Confirmed", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("confirmedEmail", "true");
+    });
+    x.AddPolicy("Administrator", policy =>
+    {
+        policy.RequireRole("admin");
+    });
+    x.AddPolicy("AnyUser", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("hasRole", "true");
+    });
+});
 
 var app = builder.Build();
 

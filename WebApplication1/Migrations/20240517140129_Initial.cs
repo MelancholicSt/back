@@ -73,7 +73,28 @@ namespace WebApplication1.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "CharKeys",
+                name: "Categories",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CategoryId = table.Column<ulong>(type: "bigint unsigned", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Categories_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "CharValues",
                 columns: table => new
                 {
                     Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
@@ -83,22 +104,7 @@ namespace WebApplication1.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CharKeys", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Images",
-                columns: table => new
-                {
-                    Guid = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Extension = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Images", x => x.Guid);
+                    table.PrimaryKey("PK_CharValues", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -174,22 +180,157 @@ namespace WebApplication1.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "CharValues",
+                name: "CharKeys",
                 columns: table => new
                 {
                     Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    KeyId = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                    AttributeNameId = table.Column<ulong>(type: "bigint unsigned", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CharValues", x => x.Id);
+                    table.PrimaryKey("PK_CharKeys", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CharValues_CharKeys_KeyId",
-                        column: x => x.KeyId,
+                        name: "FK_CharKeys_CharValues_AttributeNameId",
+                        column: x => x.AttributeNameId,
+                        principalTable: "CharValues",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Materials",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SupplierId = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    MeasureId = table.Column<uint>(type: "int unsigned", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Materials", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Materials_Measures_MeasureId",
+                        column: x => x.MeasureId,
+                        principalTable: "Measures",
+                        principalColumn: "MeasureId",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Chars",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    AttributeValueId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
+                    AttributeNameId = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Chars", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Chars_CharKeys_AttributeValueId",
+                        column: x => x.AttributeValueId,
                         principalTable: "CharKeys",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Chars_CharValues_AttributeNameId",
+                        column: x => x.AttributeNameId,
+                        principalTable: "CharValues",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AccountInfo",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    AccountId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Surname = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    GeolocationId = table.Column<ulong>(type: "bigint unsigned", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountInfo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AccountInfo_AccountGeolocations_GeolocationId",
+                        column: x => x.GeolocationId,
+                        principalTable: "AccountGeolocations",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderKey = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProviderDisplayName = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -201,7 +342,8 @@ namespace WebApplication1.Migrations
                 {
                     Id = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    GeolocationId = table.Column<ulong>(type: "bigint unsigned", nullable: true),
+                    ProfileImageGuid = table.Column<string>(type: "varchar(255)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     OrganizationId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
                     Discriminator = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -233,118 +375,9 @@ namespace WebApplication1.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_AccountGeolocations_GeolocationId",
-                        column: x => x.GeolocationId,
-                        principalTable: "AccountGeolocations",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_AspNetUsers_Organizations_OrganizationId",
                         column: x => x.OrganizationId,
                         principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Chars",
-                columns: table => new
-                {
-                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    KeyId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
-                    ValueId = table.Column<ulong>(type: "bigint unsigned", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Chars", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Chars_CharKeys_KeyId",
-                        column: x => x.KeyId,
-                        principalTable: "CharKeys",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Chars_CharValues_ValueId",
-                        column: x => x.ValueId,
-                        principalTable: "CharValues",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClaimType = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ClaimValue = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
-                columns: table => new
-                {
-                    LoginProvider = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProviderKey = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProviderDisplayName = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserRoles",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    RoleId = table.Column<string>(type: "varchar(255)", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -416,95 +449,111 @@ namespace WebApplication1.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Material",
+                name: "MaterialSupplier",
                 columns: table => new
                 {
-                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    MeasureId = table.Column<uint>(type: "int unsigned", nullable: false),
-                    SupplierId = table.Column<string>(type: "varchar(255)", nullable: true)
+                    AvailableMaterialsId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
+                    SuppliersId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Material", x => x.Id);
+                    table.PrimaryKey("PK_MaterialSupplier", x => new { x.AvailableMaterialsId, x.SuppliersId });
                     table.ForeignKey(
-                        name: "FK_Material_AspNetUsers_SupplierId",
-                        column: x => x.SupplierId,
+                        name: "FK_MaterialSupplier_AspNetUsers_SuppliersId",
+                        column: x => x.SuppliersId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Material_Measures_MeasureId",
-                        column: x => x.MeasureId,
-                        principalTable: "Measures",
-                        principalColumn: "MeasureId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "UserOrders",
-                columns: table => new
-                {
-                    OrderId = table.Column<ulong>(type: "bigint unsigned", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    StatusId = table.Column<uint>(type: "int unsigned", nullable: false),
-                    ClientId = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    SupplierId = table.Column<string>(type: "varchar(255)", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserOrders", x => x.OrderId);
                     table.ForeignKey(
-                        name: "FK_UserOrders_AspNetUsers_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserOrders_AspNetUsers_SupplierId",
-                        column: x => x.SupplierId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_UserOrders_Statuses_StatusId",
-                        column: x => x.StatusId,
-                        principalTable: "Statuses",
+                        name: "FK_MaterialSupplier_Materials_AvailableMaterialsId",
+                        column: x => x.AvailableMaterialsId,
+                        principalTable: "Materials",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Products",
+                name: "Offers",
                 columns: table => new
                 {
                     Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Description = table.Column<string>(type: "longtext", nullable: false)
+                    SenderId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Name = table.Column<string>(type: "longtext", nullable: false)
+                    ReceiverId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Offers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Offers_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Offers_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ExpirationTime = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    ClientId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    OrderId = table.Column<ulong>(type: "bigint unsigned", nullable: true),
                     SupplierId = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Products", x => x.Id);
+                    table.PrimaryKey("PK_Orders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Products_AspNetUsers_SupplierId",
+                        name: "FK_Orders_AspNetUsers_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Orders_AspNetUsers_SupplierId",
                         column: x => x.SupplierId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "OrderStatus",
+                columns: table => new
+                {
+                    OrdersId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
+                    StatusesId = table.Column<uint>(type: "int unsigned", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderStatus", x => new { x.OrdersId, x.StatusesId });
                     table.ForeignKey(
-                        name: "FK_Products_UserOrders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "UserOrders",
-                        principalColumn: "OrderId");
+                        name: "FK_OrderStatus_Orders_OrdersId",
+                        column: x => x.OrdersId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderStatus_Statuses_StatusesId",
+                        column: x => x.StatusesId,
+                        principalTable: "Statuses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -524,12 +573,60 @@ namespace WebApplication1.Migrations
                         principalTable: "ClientBuckets",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "DeliveryInfos",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    DeliveryTime = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    PricePerKm = table.Column<float>(type: "float", nullable: false),
+                    DeliveryMethod = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProductInfoId = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeliveryInfos", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CategoryId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
+                    SupplierId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DeliveryInfoId = table.Column<ulong>(type: "bigint unsigned", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ClientBucketProduct_Products_ProductsId",
-                        column: x => x.ProductsId,
-                        principalTable: "Products",
+                        name: "FK_Products_AspNetUsers_SupplierId",
+                        column: x => x.SupplierId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Products_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Products_DeliveryInfos_DeliveryInfoId",
+                        column: x => x.DeliveryInfoId,
+                        principalTable: "DeliveryInfos",
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -559,6 +656,31 @@ namespace WebApplication1.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "OrderProduct",
+                columns: table => new
+                {
+                    OrdersId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
+                    ProductsId = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderProduct", x => new { x.OrdersId, x.ProductsId });
+                    table.ForeignKey(
+                        name: "FK_OrderProduct_Orders_OrdersId",
+                        column: x => x.OrdersId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderProduct_Products_ProductsId",
+                        column: x => x.ProductsId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "ProductInfo",
                 columns: table => new
                 {
@@ -566,20 +688,29 @@ namespace WebApplication1.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CharacteristicsId = table.Column<ulong>(type: "bigint unsigned", nullable: true),
                     MaterialId = table.Column<ulong>(type: "bigint unsigned", nullable: true),
+                    CategoryId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
+                    Description = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     ProductId = table.Column<ulong>(type: "bigint unsigned", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProductInfo", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_ProductInfo_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_ProductInfo_Chars_CharacteristicsId",
                         column: x => x.CharacteristicsId,
                         principalTable: "Chars",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ProductInfo_Material_MaterialId",
+                        name: "FK_ProductInfo_Materials_MaterialId",
                         column: x => x.MaterialId,
-                        principalTable: "Material",
+                        principalTable: "Materials",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ProductInfo_Products_ProductId",
@@ -589,6 +720,68 @@ namespace WebApplication1.Migrations
                         onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "SellInfos",
+                columns: table => new
+                {
+                    Id = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ProductId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
+                    PricePerMeasure = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SellInfos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SellInfos_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Images",
+                columns: table => new
+                {
+                    Guid = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Extension = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Name = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProductId = table.Column<ulong>(type: "bigint unsigned", nullable: false),
+                    ProductInfoId = table.Column<ulong>(type: "bigint unsigned", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Images", x => x.Guid);
+                    table.ForeignKey(
+                        name: "FK_Images_ProductInfo_ProductInfoId",
+                        column: x => x.ProductInfoId,
+                        principalTable: "ProductInfo",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Images_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AccountInfo_AccountId",
+                table: "AccountInfo",
+                column: "AccountId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AccountInfo_GeolocationId",
+                table: "AccountInfo",
+                column: "GeolocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -622,14 +815,14 @@ namespace WebApplication1.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_GeolocationId",
-                table: "AspNetUsers",
-                column: "GeolocationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_OrganizationId",
                 table: "AspNetUsers",
                 column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ProfileImageGuid",
+                table: "AspNetUsers",
+                column: "ProfileImageGuid");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -638,19 +831,24 @@ namespace WebApplication1.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chars_KeyId",
-                table: "Chars",
-                column: "KeyId");
+                name: "IX_Categories_CategoryId",
+                table: "Categories",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Chars_ValueId",
-                table: "Chars",
-                column: "ValueId");
+                name: "IX_CharKeys_AttributeNameId",
+                table: "CharKeys",
+                column: "AttributeNameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CharValues_KeyId",
-                table: "CharValues",
-                column: "KeyId");
+                name: "IX_Chars_AttributeNameId",
+                table: "Chars",
+                column: "AttributeNameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chars_AttributeValueId",
+                table: "Chars",
+                column: "AttributeValueId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientBucketProduct_ProductsId",
@@ -664,6 +862,11 @@ namespace WebApplication1.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_DeliveryInfos_ProductInfoId",
+                table: "DeliveryInfos",
+                column: "ProductInfoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FavouritesBucketProduct_FavouritesBucketsId",
                 table: "FavouritesBucketProduct",
                 column: "FavouritesBucketsId");
@@ -675,14 +878,60 @@ namespace WebApplication1.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Material_MeasureId",
-                table: "Material",
+                name: "IX_Images_ProductId",
+                table: "Images",
+                column: "ProductId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Images_ProductInfoId",
+                table: "Images",
+                column: "ProductInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Materials_MeasureId",
+                table: "Materials",
                 column: "MeasureId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Material_SupplierId",
-                table: "Material",
+                name: "IX_MaterialSupplier_SuppliersId",
+                table: "MaterialSupplier",
+                column: "SuppliersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Offers_ReceiverId",
+                table: "Offers",
+                column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Offers_SenderId",
+                table: "Offers",
+                column: "SenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderProduct_ProductsId",
+                table: "OrderProduct",
+                column: "ProductsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_ClientId",
+                table: "Orders",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_SupplierId",
+                table: "Orders",
                 column: "SupplierId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderStatus_StatusesId",
+                table: "OrderStatus",
+                column: "StatusesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductInfo_CategoryId",
+                table: "ProductInfo",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductInfo_CharacteristicsId",
@@ -701,9 +950,14 @@ namespace WebApplication1.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Products_OrderId",
+                name: "IX_Products_CategoryId",
                 table: "Products",
-                column: "OrderId");
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_DeliveryInfoId",
+                table: "Products",
+                column: "DeliveryInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_SupplierId",
@@ -711,24 +965,92 @@ namespace WebApplication1.Migrations
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserOrders_ClientId",
-                table: "UserOrders",
-                column: "ClientId");
+                name: "IX_SellInfos_ProductId",
+                table: "SellInfos",
+                column: "ProductId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_UserOrders_StatusId",
-                table: "UserOrders",
-                column: "StatusId");
+            migrationBuilder.AddForeignKey(
+                name: "FK_AccountInfo_AspNetUsers_AccountId",
+                table: "AccountInfo",
+                column: "AccountId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_UserOrders_SupplierId",
-                table: "UserOrders",
-                column: "SupplierId");
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                table: "AspNetUserRoles",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUsers_Images_ProfileImageGuid",
+                table: "AspNetUsers",
+                column: "ProfileImageGuid",
+                principalTable: "Images",
+                principalColumn: "Guid");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_ClientBucketProduct_Products_ProductsId",
+                table: "ClientBucketProduct",
+                column: "ProductsId",
+                principalTable: "Products",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_DeliveryInfos_ProductInfo_ProductInfoId",
+                table: "DeliveryInfos",
+                column: "ProductInfoId",
+                principalTable: "ProductInfo",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Products_AspNetUsers_SupplierId",
+                table: "Products");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_CharKeys_CharValues_AttributeNameId",
+                table: "CharKeys");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Chars_CharValues_AttributeNameId",
+                table: "Chars");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Chars_CharKeys_AttributeValueId",
+                table: "Chars");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_ProductInfo_Products_ProductId",
+                table: "ProductInfo");
+
+            migrationBuilder.DropTable(
+                name: "AccountInfo");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -754,10 +1076,22 @@ namespace WebApplication1.Migrations
                 name: "FavouritesBucketProduct");
 
             migrationBuilder.DropTable(
-                name: "Images");
+                name: "MaterialSupplier");
 
             migrationBuilder.DropTable(
-                name: "ProductInfo");
+                name: "Offers");
+
+            migrationBuilder.DropTable(
+                name: "OrderProduct");
+
+            migrationBuilder.DropTable(
+                name: "OrderStatus");
+
+            migrationBuilder.DropTable(
+                name: "SellInfos");
+
+            migrationBuilder.DropTable(
+                name: "AccountGeolocations");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -769,37 +1103,46 @@ namespace WebApplication1.Migrations
                 name: "FavouritesBuckets");
 
             migrationBuilder.DropTable(
-                name: "Chars");
-
-            migrationBuilder.DropTable(
-                name: "Material");
-
-            migrationBuilder.DropTable(
-                name: "Products");
-
-            migrationBuilder.DropTable(
-                name: "CharValues");
-
-            migrationBuilder.DropTable(
-                name: "Measures");
-
-            migrationBuilder.DropTable(
-                name: "UserOrders");
-
-            migrationBuilder.DropTable(
-                name: "CharKeys");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Statuses");
 
             migrationBuilder.DropTable(
-                name: "AccountGeolocations");
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Images");
 
             migrationBuilder.DropTable(
                 name: "Organizations");
+
+            migrationBuilder.DropTable(
+                name: "CharValues");
+
+            migrationBuilder.DropTable(
+                name: "CharKeys");
+
+            migrationBuilder.DropTable(
+                name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "DeliveryInfos");
+
+            migrationBuilder.DropTable(
+                name: "ProductInfo");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Chars");
+
+            migrationBuilder.DropTable(
+                name: "Materials");
+
+            migrationBuilder.DropTable(
+                name: "Measures");
         }
     }
 }

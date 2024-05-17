@@ -1,0 +1,3 @@
+apis:
+  WebApplication1/Docs/OpenApi/Client.json:
+    alias: "api-title"

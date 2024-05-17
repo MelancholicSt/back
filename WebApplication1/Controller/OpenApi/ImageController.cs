@@ -5,13 +5,13 @@ using WebApplication1.Service.ImageService;
 namespace WebApplication1.Controller;
 
 [ApiController]
-[Route("[controller]")]
-public class ImagesController : ControllerBase
+[Route("/marketplace-api/image")]
+public class ImageController : ControllerBase
 {
     private readonly ICloudImageService _imageService;
     private readonly DbContext _context;
 
-    public ImagesController(ICloudImageService imageService, DbContext context)
+    public ImageController(ICloudImageService imageService, DbContext context)
     {
         _imageService = imageService;
         _context = context;
