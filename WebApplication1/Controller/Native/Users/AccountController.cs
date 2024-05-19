@@ -14,7 +14,7 @@ using WebApplication1.Service.ImageService;
 namespace WebApplication1.Controller;
 
 [ApiController]
-[Route("market/account/")]
+[Route("account/")]
 public class AccountController : ControllerBase
 {
     private SignInManager<Account> _signInManager;
@@ -112,11 +112,28 @@ public class AccountController : ControllerBase
     {
         await _imageService.UploadFileAsync(file, "account");
         var userId = User.FindFirstValue("uid");
-
+        
         var user = await _signInManager.UserManager.Users.FirstAsync(x => x.Id == userId);
 
         user.ProfileImage = await _context.Images.FirstAsync(x => x.Name == file.Name);
         await _context.SaveChangesAsync();
+        return Ok();
+    }
+
+    [HttpPut("image/replace")]
+    public async Task<IActionResult> ReplaceAccountImage(IFormFile file)
+    {
+        var userId = User.FindFirstValue("uid");
+        
+        var user = await _signInManager.UserManager.Users.FirstAsync(x => x.Id == userId);
+        var currentImage = await _context.Images.FirstAsync(x => x.Name == file.Name);
+        
+        await _imageService.DeleteFileAsync(currentImage.Guid);
+        await _imageService.UploadFileAsync(file);
+
+        currentImage = await _context.Images.FirstAsync(x => x.Name == file.Name);
+        user.ProfileImage = currentImage;
+
         return Ok();
     }
 
@@ -126,8 +143,16 @@ public class AccountController : ControllerBase
     {
         var userId = User.FindFirstValue("uid");
         var account = await _signInManager.UserManager.FindByIdAsync(userId);
-
-        return Ok(JsonConvert.SerializeObject(account.AccountInfo));
+        AccountInfoDto infoDto = new AccountInfoDto()
+        {
+            Name = account.AccountInfo.Name,
+            Surname = account.AccountInfo.Surname,
+            Country = account.AccountInfo.Geolocation.Country,
+            City = account.AccountInfo.Geolocation.City,
+            AddressInCity = account.AccountInfo.Geolocation.LocalAddress,
+            FullAddress = account.AccountInfo.Geolocation.FullAddress
+        };
+        return Ok(JsonConvert.SerializeObject(infoDto));
     }
     /// <summary>
     ///  asdfasdvascva

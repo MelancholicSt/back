@@ -15,8 +15,8 @@ namespace WebApplication1.Controller.Native.Users;
 [Route("supplier/")]
 public class SupplierController : ControllerBase
 {
-    private UserManager<Supplier> _supplierManager;
-    private DbContext _context;
+    private readonly UserManager<Supplier> _supplierManager;
+    private readonly DbContext _context;
 
     public SupplierController(DbContext context, UserManager<Supplier> supplierManager)
     {
@@ -33,9 +33,13 @@ public class SupplierController : ControllerBase
             .FirstOrDefaultAsync(order => order.Id == orderId);
         if (order == null)
             return NotFound("Order not found");
+        
         if (order.Statuses.Contains(acceptedStatus))
-            return BadRequest("Order is already accepted");
-
+            return BadRequest("Order is already performing");
+        
+        if (order.Statuses.Last().Name != "submitted")
+            return BadRequest("Order cannot be accepted. The order status is invalid");
+        
         Supplier supplier = await GetCurrentUserAsync();
 
         order.Supplier = supplier;
@@ -48,41 +52,6 @@ public class SupplierController : ControllerBase
     }
 
 
-    [HttpPost("products/add")]
-    public async Task<IActionResult> AddProduct([FromBody] ProductDto productDto)
-    {
-        Supplier supplier = await GetCurrentUserAsync();
-
-        Material? material =
-            await _context.Materials.FirstOrDefaultAsync(material => material.Name == productDto.MaterialName);
-        Category? category =
-            await _context.Categories.FirstOrDefaultAsync(category => category.Name == productDto.CategoryName);
-
-        if (material == null)
-            return NotFound($"Material \"{productDto.MaterialName}\" not found");
-
-        if (category == null)
-            return NotFound($"Category \"{productDto.CategoryName}\" not found");
-
-        var supplierMaterialNames = supplier.AvailableProducts.Select(material => material.Name).ToList();
-
-        if (supplierMaterialNames.Contains(productDto.MaterialName))
-            return BadRequest("Supplier is selling this material already");
-
-        Product product = new Product
-        {
-            Name = productDto.Name,
-            Category = category,
-            CategoryId = category.Id,
-            Supplier = supplier,
-            SupplierId = supplier.Id,
-
-        };
-        await _context.Products.AddAsync(product);
-        await _context.SaveChangesAsync();
-        
-        return Ok();
-    }
 
     private async Task<Supplier> GetCurrentUserAsync()
     {

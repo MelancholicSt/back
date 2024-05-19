@@ -25,18 +25,20 @@ public class OrderController : ControllerBase
     /// <param name="pageSize">Count of orders per page. Max value is 300</param>
     /// <param name="pageIndex">Current page index</param>
     /// <returns>Array of orders</returns>
-    [HttpGet("all")]
-    public IActionResult GetAllOrders(int? from, int? to, int pageSize = 100, int pageIndex = 1)
+    [HttpGet("")]
+    public IActionResult GetOrders(int? from, int? to, int pageSize = 100, int pageIndex = 1)
     {
         if (pageSize > 300)
             return BadRequest("page size is more than max value");
-        var orders = _context.Orders.ToList().GetRange(pageSize * pageIndex, pageSize);
+        var currentPage = pageSize * pageIndex;
+
+        var orders = _context.Orders.ToList().GetRange(currentPage, pageSize);
 
         if (to != null)
         {
             if (to > orders.Count - 1)
                 return BadRequest(
-                    $"\"To\" index is greater than orders count in page(last order index: {orders.Count - 1})");
+                    $"\"To\" index is greater than orders count in page(last order index: {(orders.Count - 1).ToString()})");
 
             orders.RemoveRange((int)to - 1, orders.Count - ((int)to - 1));
         }
@@ -48,14 +50,16 @@ public class OrderController : ControllerBase
             orders.RemoveRange(0, (int)from - 1);
         }
 
-        return Ok(JsonConvert.SerializeObject(orders));
+        var orderIds = orders.Select(order => order.Id).ToList();
+
+        return Ok(JsonConvert.SerializeObject(orderIds));
     }
 
     /// <summary>
     /// 
     /// </summary>
     /// <returns>Current count of all orders</returns>
-    [HttpGet("all/count")]
+    [HttpGet("count")]
     public IActionResult GetAllOrdersCount() => Ok(JsonConvert.SerializeObject(_context.Orders.Count()));
 
 
@@ -67,21 +71,57 @@ public class OrderController : ControllerBase
     [HttpGet("{orderId}")]
     public async Task<IActionResult> GetOrder(ulong orderId)
     {
-        var order = await _context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);
+        var order = await _context.Orders.Include(order => order.Statuses).Include(order => order.Products)
+            .FirstOrDefaultAsync(order => order.Id == orderId);
         if (order == null)
             return NotFound("Order not found");
-
-        return Ok(JsonConvert.SerializeObject(order));
+        var response = new
+        {
+            Owner = order.ClientId,
+            CurrentStatus = order.Statuses.Last(),
+            Supplier = order.SupplierId,
+            Products = order.Products.Select(product => product.Id),
+            Exparation = order.ExpirationTime
+        };
+        return Ok(JsonConvert.SerializeObject(response));
     }
 
-    [HttpGet("{orderId}/exparation")]
-    public async Task<IActionResult> GetOrderExpiration(ulong orderId)
+    [HttpGet("submitted")]
+    public IActionResult GetSubmittedOrders()
     {
-        var order = await _context.Orders.FirstOrDefaultAsync(order => order.Id == orderId);
+        var orders = _context.Orders.Where(order => order.Statuses.Last().Name.ToLower() == "submitted");
+        var ids = orders.Select(order => order.Id);
+
+        return Ok(JsonConvert.SerializeObject(ids.ToList()));
+    }
+
+    [HttpGet("status={name}")]
+    public IActionResult GetOrdersWithStatus(string name)
+    {
+        var orders = _context.Orders.Where(order => order.Statuses.Last().Name.ToLower() == name.ToLower());
+        var ids = orders.Select(order => order.Id);
+        return Ok(JsonConvert.SerializeObject(ids));
+    }
+
+    [HttpGet("{orderId}/price")]
+    public async Task<IActionResult> GetOrderPrice(ulong orderId)
+    {
+        var order = await _context.Orders.Include(order => order.Products).FirstOrDefaultAsync(order => order.Id == orderId);
         if (order == null)
             return NotFound("Order not found");
-        
-        return Ok(order.ExpirationTime);
+
+        throw new NotImplementedException();
+    }
+    
+    [HttpPost("{orderId}/status={name}")]
+    public async Task<IActionResult> SetOrderStatus(ulong orderId, string name)
+    {
+        var order = await _context.Orders.Include(order => order.Statuses)
+            .FirstOrDefaultAsync(order => order.Id == orderId);
+        if (order == null)
+            return NotFound("Order not found");
+
+        throw new NotImplementedException();
     }
 
     [HttpGet("client/{clientId}/all")]
@@ -98,17 +138,5 @@ public class OrderController : ControllerBase
                 );
 
         return Ok(JsonConvert.SerializeObject(orders.ToList()));
-    }
-
-
-    [HttpGet("{orderId}/status/")]
-    public async Task<IActionResult> GetOrderStatus(ulong orderId)
-    {
-        Order? order = await _context.Orders.Include(order => order.Statuses).FirstOrDefaultAsync(order => order.Id == orderId);
-        if (order == null)
-            return NotFound("Order not found");
-
-        
-        return Ok(JsonConvert.SerializeObject(order.Statuses.Last().Name));
     }
 }

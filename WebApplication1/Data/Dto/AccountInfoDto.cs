@@ -1,6 +1,6 @@
 ﻿namespace WebApplication1.Data.Dto;
 
-public class ClientInfoDto
+public class AccountInfoDto
 {
     public string Name { get; set; }
     public string Surname { get; set; }

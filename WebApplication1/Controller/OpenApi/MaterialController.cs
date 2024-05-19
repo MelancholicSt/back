@@ -27,7 +27,7 @@ public class MaterialController : ControllerBase
 
         var suppliers = material.Suppliers.Where(supplier => supplier.AvailableMaterials.Contains(material));
         var ids = suppliers.Select(supplier => supplier.Id).ToList();
-
+        
         return Ok(JsonConvert.SerializeObject(ids));
     }
 
@@ -42,11 +42,17 @@ public class MaterialController : ControllerBase
     [HttpGet("{materialId}")]
     public async Task<IActionResult> GetMaterialById(ulong materialId)
     {
-        var material = await _context.Materials.FirstOrDefaultAsync(material => material.Id == materialId);
+        var material = await _context.Materials.Include(material => material.Measure)
+            .FirstOrDefaultAsync(material => material.Id == materialId);
         if (material == null)
             return NotFound("Material not found");
-
-        return Ok(JsonConvert.SerializeObject(material));
+        var response = new
+        {
+            material.Id,
+            material.Name,
+            material.Measure.MeasureName
+        };
+        return Ok(JsonConvert.SerializeObject(response));
     }
 
     [HttpPost("add")]
@@ -56,6 +62,7 @@ public class MaterialController : ControllerBase
             _context.Materials.Select(material => material.Name.ToLower()).Contains(materialName);
         if (isMaterialExistsAlready)
             return BadRequest("Material already exists");
+        
         Material material = new Material
         {
             Name = materialName,

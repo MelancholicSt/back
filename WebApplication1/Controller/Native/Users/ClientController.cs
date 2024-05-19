@@ -17,7 +17,7 @@ using WebApplication1.Service;
 namespace WebApplication1.Controller;
 
 [ApiController]
-[Route("market/client/")]
+[Route("client/")]
 [Authorize(Roles = "client")]
 public class ClientController : ControllerBase
 {
@@ -37,29 +37,7 @@ public class ClientController : ControllerBase
         _productShowcaseService = productShowcaseService;
         _supplierManager = supplierManager;
     }
-
-    [HttpGet("me/info")]
-    public async Task<IActionResult> GetInfo()
-    {
-        Client client = await GetCurrentUserAsync();
-        ClientInfoDto clientInfoDto = new ClientInfoDto
-        {
-            Name = client.AccountInfo.Name,
-            Surname = client.AccountInfo.Surname,
-            Country = client.AccountInfo.Geolocation.Country,
-            City = client.AccountInfo.Geolocation.City,
-            AddressInCity = client.AccountInfo.Geolocation.LocalAddress,
-            FullAddress = client.AccountInfo.Geolocation.FullAddress
-        };
-
-        return Ok(JsonConvert.SerializeObject(clientInfoDto));
-    }
-
-    [HttpGet("me")]
-    public async Task<IActionResult> GetSelf()
-    {
-        return Ok(JsonConvert.SerializeObject(await GetCurrentUserAsync()));
-    }
+    
     /// <summary>
     /// Receives all orders of requesting client 
     /// </summary>
@@ -73,33 +51,9 @@ public class ClientController : ControllerBase
             .ToList();
         return Ok(JsonConvert.SerializeObject(orderIds));
     }
+    
 
-    [HttpGet("my/orders/{orderId}")]
-    public async Task<IActionResult> GetOrder(ulong orderId)
-    {
-        Client client = await GetCurrentUserAsync();
-        Order? order = client.Orders.FirstOrDefault(x => x.Id == orderId);
-        if (order == null)
-            return NotFound("Order not found");
-        return Ok(JsonConvert.SerializeObject(order));
-    }
-
-    [HttpGet("my/orders/{orderId}/products")]
-    public async Task<IActionResult> GetAllOrderProducts(ulong orderId)
-    {
-        Client client = await GetCurrentUserAsync();
-
-        Order? order = client.Orders.FirstOrDefault(x => x.Id == orderId);
-        if (order == null)
-            return NotFound("Order not found");
-        var productIds = order.Products
-            .Select(product => product.Id)
-            .ToList();
-
-        return Ok(JsonConvert.SerializeObject(productIds));
-    }
-
-    [HttpGet("my/bucket/")]
+    [HttpGet("bucket/")]
     public async Task<IActionResult> GetProductsInBucket()
     {
         Client client = await GetCurrentUserAsync();
@@ -109,7 +63,7 @@ public class ClientController : ControllerBase
         return Ok(JsonConvert.SerializeObject(productIds));
     }
 
-    [HttpPatch("my/bucket/add/product/{productId}")]
+    [HttpPatch("bucket/add/{productId}")]
     public async Task<IActionResult> AddProductToBucket(ulong productId)
     {
         Client client = await GetCurrentUserAsync();
@@ -124,7 +78,7 @@ public class ClientController : ControllerBase
         return Ok();
     }
 
-    [HttpPatch("my/bucket/remove/product/{productId}")]
+    [HttpPatch("bucket/remove/{productId}")]
     public async Task<IActionResult> RemoveProductFromBucket(ulong productId)
     {
         Client client = await GetCurrentUserAsync();
@@ -141,7 +95,7 @@ public class ClientController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("my/orders/create")]
+    [HttpPost("orders/create")]
     public async Task<IActionResult> CreateOrder()
     {
         Client client = await GetCurrentUserAsync();
@@ -161,7 +115,7 @@ public class ClientController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok();
     }
-    [HttpPost("my/order/select-supplier/")]
+    [HttpPost("order/select-supplier/")]
     public async Task<IActionResult> SelectSupplierForOrder(string supplierId)
     {
         Supplier? supplier = await _supplierManager.FindByIdAsync(supplierId);
@@ -173,12 +127,11 @@ public class ClientController : ControllerBase
         
         if (order == null)
             return NotFound("Order not found");
-
-
+        
         return Ok();
     }
 
-    [HttpPost("my/orders/{orderId}/submit")]
+    [HttpPost("orders/{orderId}/submit")]
     public async Task<IActionResult> SubmitOrder(ulong orderId)
     {
         Client client = await GetCurrentUserAsync();
@@ -192,20 +145,21 @@ public class ClientController : ControllerBase
         if (order.Supplier == null)
             return BadRequest("Supplier isn't selected for this order");
 
+        if (order.Statuses.Last().Name.ToLower() != "new")
+            return BadRequest($"Cannot submit order with {order.Statuses.Last()} status");
+        
         DateTime currentTime = DateTime.Now;
-
+        
         var expirationTime = currentTime.AddDays(1)
             .AddHours(12)
             .AddMinutes(30);
-
+        
         order.ExpirationTime = expirationTime;
+        order.Statuses.Enqueue(new Status() { Name = "submitted"});
         return Ok();
     }
 
-
- 
-
-    [HttpGet("my/favourite-products")]
+    [HttpGet("favourites")]
     public async Task<IActionResult> GetFavouritesProducts()
     {
         Client client = await GetCurrentUserAsync();
@@ -214,6 +168,20 @@ public class ClientController : ControllerBase
             .ToList();
 
         return Ok(JsonConvert.SerializeObject(productIds));
+    }
+
+    [HttpPatch("favourites/add/{productId}")]
+    public async Task<IActionResult> AddProductToFavourites(ulong productId)
+    {
+        Client client = await GetCurrentUserAsync();
+        var product = await _context.Products.FirstOrDefaultAsync(product => product.Id == productId);
+        if (product == null)
+            return NotFound("Product not found");
+        
+        client.FavouritesBucket.FavouriteProducts.Add(product);
+        await _context.SaveChangesAsync();
+
+        return Ok();
     }
 
     private async Task<Client> GetCurrentUserAsync()

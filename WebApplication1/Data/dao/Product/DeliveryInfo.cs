@@ -6,7 +6,4 @@ public class DeliveryInfo
     public DateTime? DeliveryTime { get; set; }
     public float PricePerKm { get; set; }
     public string DeliveryMethod { get; set; }
-
-    public ProductInfo ProductInfo { get; set; } = null!;
-    public ulong ProductInfoId { get; set;}
 }

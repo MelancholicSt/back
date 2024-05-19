@@ -1,14 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using WebApplication1.Data.dao;
 using WebApplication1.Data.dao.Identity;
 using WebApplication1.Data.dao.Supplier;
 
-namespace WebApplication1.Controller;
+namespace WebApplication1.Controller.Native.Users;
 
 [ApiController]
 [Route("manager/")]
