@@ -8,6 +8,8 @@
     ".NETCoreApp,Version=v8.0": {
       "WebApplication1/1.0.0": {
         "dependencies": {
+          "AWSSDK.S3": "3.7.307.28",
+          "DuoVia.FuzzyStrings": "2.1.0",
           "InstantAPIs": "0.2.0",
           "MailKit": "4.5.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "8.0.4",
@@ -24,11 +26,38 @@
           "WebApplication1.dll": {}
         }
       },
+      "AWSSDK.Core/3.7.303.26": {
+        "runtime": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.303.26"
+          }
+        }
+      },
+      "AWSSDK.S3/3.7.307.28": {
+        "dependencies": {
+          "AWSSDK.Core": "3.7.303.26"
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.S3.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.307.28"
+          }
+        }
+      },
       "BouncyCastle.Cryptography/2.3.0": {
         "runtime": {
           "lib/net6.0/BouncyCastle.Cryptography.dll": {
             "assemblyVersion": "2.0.0.0",
             "fileVersion": "2.3.0.53016"
+          }
+        }
+      },
+      "DuoVia.FuzzyStrings/2.1.0": {
+        "runtime": {
+          "lib/netstandard2.1/DuoVia.FuzzyStrings.dll": {
+            "assemblyVersion": "2.1.0.0",
+            "fileVersion": "2.1.0.0"
           }
         }
       },
@@ -684,12 +713,33 @@
       "serviceable": false,
       "sha512": ""
     },
+    "AWSSDK.Core/3.7.303.26": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4QGTkTVTpVyUpnVWaB2W1ggWlnj4WvlsauXG0m6H0cg91nvw+K6l2N5V6dBxP5wxZReASksj8NDrBpJtCE7VQQ==",
+      "path": "awssdk.core/3.7.303.26",
+      "hashPath": "awssdk.core.3.7.303.26.nupkg.sha512"
+    },
+    "AWSSDK.S3/3.7.307.28": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-TROsvv83ZlVUOixPLtVsbRPGowsKaFqlOqRkRaVjqg3+m/URUF4UyqMSn4r+JMkKzIItwey1QOQO57fL+ABtTw==",
+      "path": "awssdk.s3/3.7.307.28",
+      "hashPath": "awssdk.s3.3.7.307.28.nupkg.sha512"
+    },
     "BouncyCastle.Cryptography/2.3.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-IaVIiYxZLaBulveGDRUx/pBoW/Rc8QeXGF5u2E8xL8RWhVKCgfmtX9NUyGRbnSqnbFQU2zyP3MkXIdH+jUuQBw==",
       "path": "bouncycastle.cryptography/2.3.0",
       "hashPath": "bouncycastle.cryptography.2.3.0.nupkg.sha512"
+    },
+    "DuoVia.FuzzyStrings/2.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xkGo6s2x3ISS6bLgxCW6lcrn0nxMbsuPuG8N55fk1g5TFkIVqWDlj0IVWQIW7anB0SmCWlPjACPHoFpw8gLJfQ==",
+      "path": "duovia.fuzzystrings/2.1.0",
+      "hashPath": "duovia.fuzzystrings.2.1.0.nupkg.sha512"
     },
     "Humanizer.Core/2.14.1": {
       "type": "package",

@@ -1,22 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Identity;
 
-namespace WebApplication1.Data.dao;
-
+namespace WebApplication1.Data.dao.Order;
+using Product;
 
 public class Order
 {
     [Key]
-    public long OrderId { get; set; }
+    public ulong Id { get; set; }
 
-    public long TotalPrice { get; set; } = 0;
-    public string OwnerId { get; set; } = null!;
-    public Client Owner { get; set; } = null!;
+    public DateTime? ExpirationTime { get; set; }
+    public Queue<Status> Statuses { get; } = new();
+
+    public Client.Client Client { get; set; } = null!;
+    public string ClientId { get; set; }
     
-    public string? PerformerId { get; set; }
-    public Supplier? Performer { get; set; }
-    public Status Status { get; set; } = new ();
-    public List<Product> Products { get; set; } = new ();
-    
+    public Supplier.Supplier? Supplier { get; set; }
+    public string? SupplierId { get; set; }
+    public List<Material>? Materials { get; } = new ();
 }
