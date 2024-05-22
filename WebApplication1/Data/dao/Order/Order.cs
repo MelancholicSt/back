@@ -17,5 +17,5 @@ public class Order
     
     public Supplier.Supplier? Supplier { get; set; }
     public string? SupplierId { get; set; }
-    public List<Product>? Products { get; } = new ();
+    public List<Material>? Materials { get; } = new ();
 }

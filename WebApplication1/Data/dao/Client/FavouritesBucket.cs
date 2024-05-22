@@ -15,5 +15,5 @@ public class FavouritesBucket
     /// <summary>
     /// Liked products
     /// </summary>
-    public List<Product>? FavouriteProducts { get; } = new();
+    public List<Material>? FavouriteProducts { get; } = new();
 }

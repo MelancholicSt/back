@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using WebApplication1.Data.dao;
+using WebApplication1.Data.dao.Product;
 
 namespace WebApplication1.Controller.OpenApi;
 
@@ -20,11 +21,11 @@ public class CategoryController : ControllerBase
     [HttpGet("{categoryId}/")]
     public async Task<IActionResult> GetCategory(ulong categoryId)
     {
-        var category = await _context.Categories.Include(category => category.Products)
+        var category = await _context.Categories.Include(category => category.Materials)
             .FirstOrDefaultAsync(category => category.Id == categoryId);
         if (category == null)
             return NotFound("Category not found");
-        var categoryProductIds = category.Products.Select(product => product.Id).ToList();
+        var categoryProductIds = category.Materials.Select(product => product.Id).ToList();
         var categoryChildrenIds = category.Children.Select(child => child.Id).ToList();
 
         var response = new
@@ -42,7 +43,7 @@ public class CategoryController : ControllerBase
     {
         var leafs = _context.Categories
             .Where(category => !category.Children.Any())
-            .Select(category => new { id = category.Id})
+            .Select(category => new { id = category.Id })
             .ToList();
 
         return Ok(JsonConvert.SerializeObject(leafs));
@@ -72,35 +73,45 @@ public class CategoryController : ControllerBase
         return Ok();
     }
 
-    [HttpPost("{categoryId}/add/products")]
-    public async Task<IActionResult> AddProductToCategory(ulong categoryId, ulong productId)
+    [HttpPost("{categoryId}/add/materials")]
+    public async Task<IActionResult> AddMaterialToCategory(ulong categoryId, [FromBody] List<ulong> materialIds)
     {
         var category = await _context.Categories
-            .Include(category => category.Products)
+            .Include(category => category.Materials)
             .FirstOrDefaultAsync(category => category.Id == categoryId);
         if (category == null)
             return NotFound("Category not found");
 
-        var product = await _context.Products.FirstOrDefaultAsync(product => product.Id == productId);
+        List<Material> materials = new List<Material>();
+        List<Material> notFoundMaterials = new List<Material>();
+        foreach (ulong materialId in materialIds)
+        {
+            var material = await _context.Materials.FirstOrDefaultAsync(material => material.Id == materialId);
+            if (material == null)
+            {
+                notFoundMaterials.Add(material);
+                continue;
+            }
+            if(category.Materials.Contains(material))
+                continue;
+            
+            materials.Add(material);
+        }
 
-        if (product == null)
-            return NotFound("Product not found");
-        if (category.Products.Contains(product))
-            return BadRequest("Product already exists in this category");
-
-        category.Products.Add(product);
+        
+        category.Materials.AddRange(materials);
         await _context.SaveChangesAsync();
         return Ok();
     }
 
-    [HttpDelete("{categoryId}/remove/products")]
+    [HttpDelete("{categoryId}/remove/materials")]
     public async Task<IActionResult> RemoveProductsFromCategory(ulong categoryId, [FromBody] List<ulong> productIds)
     {
         if (!productIds.Any())
             return BadRequest("No product ids entered");
-        
+
         var category = await _context.Categories
-            .Include(category => category.Products)
+            .Include(category => category.Materials)
             .FirstOrDefaultAsync(category => category.Id == categoryId);
         if (category == null)
             return NotFound("Category not found");
@@ -114,7 +125,7 @@ public class CategoryController : ControllerBase
             var notFoundProductIds = productIds.Except(currentProductIds);
             return NotFound($"Those product ids not found: {string.Join("\n", notFoundProductIds)}");
         }
-        
+
         await _context.SaveChangesAsync();
         return Ok();
     }
@@ -134,7 +145,7 @@ public class CategoryController : ControllerBase
         {
             var parentCategory = await _context.Categories
                 .Include(category => category.Children)
-                .Include(category => category.Products)
+                .Include(category => category.Materials)
                 .FirstOrDefaultAsync(category => category.Id == parentId);
 
             if (parentCategory == null)

@@ -12,9 +12,6 @@ public class Image
     public string Extension { get; set; } = null!;
     public string Name { get; set; } = null!;
 
-    public Product.Product? Product { get; set; }
+    public Product.Material? Product { get; set; }
     public ulong ProductId { get; set; }
-
-    public ProductInfo? ProductInfo { get; set; } 
-    public ulong ProductInfoId { get; set; }
 }

@@ -16,30 +16,31 @@ public class ProductController : ControllerBase
         _context = context;
     }
 
-    [HttpGet("all")]
-    public IActionResult GetAllProducts()
-    {
-        return Ok(JsonConvert.SerializeObject(_context.Products.ToList()));
-    }
 
-    [HttpGet("{productId}")]
-    public async Task<IActionResult> GetProduct(ulong productId)
+    [HttpGet("{materialId}/")]
+    public async Task<IActionResult> GetMaterial(ulong materialId)
     {
-        Product? product = await _context.Products.FirstOrDefaultAsync(product => product.Id == productId);
-        if (product == null)
-            return NotFound("Product not found");
-        return Ok(JsonConvert.SerializeObject(product));
-    }
-
-    [HttpGet("{productId}/information")]
-    public async Task<IActionResult> GetProductInfo(ulong productId)
-    {
-        Product? product = await _context.Products.Include(product => product.Info)
-            .FirstOrDefaultAsync(product => product.Id == productId);
-        if (product == null)
+        Material? material = await _context.Materials
+            .Include(material => material.Suppliers)
+            .Include(material => material.MainImage)
+            .Include(material => material.Images)
+            .FirstOrDefaultAsync(product => product.Id == materialId);
+        if (material == null)
             return NotFound("Order not found");
 
-        return Ok(JsonConvert.SerializeObject(product.Info));
+        var response = new
+        {
+            material.Name,
+            material.Id,
+            AvailableSuppliers = material.Suppliers.Select(supplier => supplier.Id),
+            material.CategoryId,
+            material.Description,
+            MainImageGuid = material.MainImage.Guid,
+            ImagesGuid = material.Images.Select(image => image.Guid),
+            material.Measure,
+
+        };
+
+        return Ok(JsonConvert.SerializeObject(response));
     }
-    
 }

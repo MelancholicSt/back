@@ -7,8 +7,6 @@ using WebApplication1.Data.dao.Client;
 using WebApplication1.Data.dao.Identity;
 using WebApplication1.Data.dao.Order;
 using WebApplication1.Data.dao.Product;
-using WebApplication1.Data.dao.Product.Chars;
-using WebApplication1.Data.dao.Product.Details;
 using WebApplication1.Data.dao.Supplier;
 
 namespace WebApplication1;
@@ -19,21 +17,18 @@ public sealed class DbContext : IdentityDbContext<Account>
     public DbSet<FavouritesBucket> FavouritesBuckets { get; set; }
     public DbSet<ClientBucket> ClientBuckets { get; set; }
     public DbSet<BucketCredentials> BucketCredentials { get; set; }
-    public DbSet<Characteristics> Chars { get; set; }
-    public DbSet<CharAttributeValue> CharKeys { get; set; }
-    public DbSet<CharAttributeName> CharValues { get; set; }
     public DbSet<Status> Statuses { get; set; }
     public DbSet<DeliveryInfo> DeliveryInfos { get; set; }
     public DbSet<Material> Materials { get; set; }
     public DbSet<AccountGeolocation> AccountGeolocations { get; set; }
     public DbSet<Organization> Organizations { get; set; }
     public DbSet<Category> Categories { get; set; }
-    public DbSet<Product> Products { get; set; }
-    public DbSet<ProductSellInfo> SellInfos { get; set; }
+    public DbSet<MaterialSellInfo> SellInfos { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<Order> Orders { get; set; }
-    public DbSet<Measure> Measures { get; set; }
+    public DbSet<Contact> Contacts { get; set; }
+    public DbSet<DeliverCompany> DeliverCompanies { get; set; }
     public DbSet<Image> Images { get; set; }
 
 
@@ -52,15 +47,11 @@ public sealed class DbContext : IdentityDbContext<Account>
             .HasForeignKey<FavouritesBucket>(x => x.ClientId);
 
 
-        builder.Entity<ProductInfo>()
-            .HasMany(x => x.Images)
-            .WithOne(x => x.ProductInfo)
-            .HasForeignKey(x => x.ProductInfoId)
-            .IsRequired(false);
 
         builder.Entity<Supplier>()
-            .HasMany(x => x.AvailableMaterials)
+            .HasMany(x => x.Materials)
             .WithMany(x => x.Suppliers);
+        
         builder.Entity<Supplier>()
             .HasMany(x => x.PerformingOrders)
             .WithOne(x => x.Supplier)

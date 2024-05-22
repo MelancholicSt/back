@@ -24,17 +24,16 @@ public class ClientController : ControllerBase
     private UserManager<Client> _clientManager;
     private UserManager<Supplier> _supplierManager;
     private INotificationSender _notificationSender;
-    private IProductShowcaseService _productShowcaseService;
+
     private DbContext _context;
 
     public ClientController(UserManager<Client> clientManager, DbContext context,
-        INotificationSender notificationSender, IProductShowcaseService productShowcaseService,
+        INotificationSender notificationSender, 
         UserManager<Supplier> supplierManager)
     {
         _clientManager = clientManager;
         _context = context;
         _notificationSender = notificationSender;
-        _productShowcaseService = productShowcaseService;
         _supplierManager = supplierManager;
     }
     
@@ -67,7 +66,7 @@ public class ClientController : ControllerBase
     public async Task<IActionResult> AddProductToBucket(ulong productId)
     {
         Client client = await GetCurrentUserAsync();
-        Product? product = await _productShowcaseService.GetProductById(productId);
+        Material? product = await _productShowcaseService.GetProductById(productId);
         if (product == null)
             return NotFound("Product not found");
         if (client.ClientBucket.Products.Contains(product))
@@ -82,7 +81,7 @@ public class ClientController : ControllerBase
     public async Task<IActionResult> RemoveProductFromBucket(ulong productId)
     {
         Client client = await GetCurrentUserAsync();
-        Product? product = await _productShowcaseService.GetProductById(productId);
+        Material? product = await _productShowcaseService.GetProductById(productId);
         if (product == null)
             return NotFound("Product not found");
 
@@ -108,7 +107,7 @@ public class ClientController : ControllerBase
             ClientId = client.Id,
         };
 
-        order.Products.AddRange(client.ClientBucket.Products);
+        order.Materials.AddRange(client.ClientBucket.Products);
         order.Statuses.Enqueue(new Status { Name = "new" });
         client.Orders.Add(order);
         client.ClientBucket.Products.Clear();

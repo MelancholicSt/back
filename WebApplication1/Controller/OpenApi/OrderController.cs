@@ -71,7 +71,7 @@ public class OrderController : ControllerBase
     [HttpGet("{orderId}")]
     public async Task<IActionResult> GetOrder(ulong orderId)
     {
-        var order = await _context.Orders.Include(order => order.Statuses).Include(order => order.Products)
+        var order = await _context.Orders.Include(order => order.Statuses).Include(order => order.Materials)
             .FirstOrDefaultAsync(order => order.Id == orderId);
         if (order == null)
             return NotFound("Order not found");
@@ -80,7 +80,7 @@ public class OrderController : ControllerBase
             Owner = order.ClientId,
             CurrentStatus = order.Statuses.Last(),
             Supplier = order.SupplierId,
-            Products = order.Products.Select(product => product.Id),
+            Products = order.Materials.Select(product => product.Id),
             Exparation = order.ExpirationTime
         };
         return Ok(JsonConvert.SerializeObject(response));
@@ -106,7 +106,7 @@ public class OrderController : ControllerBase
     [HttpGet("{orderId}/price")]
     public async Task<IActionResult> GetOrderPrice(ulong orderId)
     {
-        var order = await _context.Orders.Include(order => order.Products).FirstOrDefaultAsync(order => order.Id == orderId);
+        var order = await _context.Orders.Include(order => order.Materials).FirstOrDefaultAsync(order => order.Id == orderId);
         if (order == null)
             return NotFound("Order not found");
 

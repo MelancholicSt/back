@@ -12,6 +12,6 @@ public class ClientBucket
     /// <summary>
     /// Products in bucket
     /// </summary>
-    public List<Product>? Products { get;} = new();
+    public List<Material>? Products { get;} = new();
     
 }
