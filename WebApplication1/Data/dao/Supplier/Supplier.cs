@@ -1,4 +1,5 @@
-﻿using WebApplication1.Data.dao.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using WebApplication1.Data.dao.Identity;
 using WebApplication1.Data.dao.Product;
 
 namespace WebApplication1.Data.dao.Supplier;

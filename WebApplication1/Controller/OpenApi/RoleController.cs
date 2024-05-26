@@ -34,4 +34,11 @@ public class RoleController : ControllerBase
         var users = _userManager.Users.Where(user => _userManager.IsInRoleAsync(user, name).Result);
         return Ok(JsonConvert.SerializeObject(users.ToList()));
     }
+
+    [HttpPost("create")]
+    public async Task<IActionResult> AddRoleToUser(string name)
+    {
+        await _roleManager.CreateAsync(new IdentityRole(name));
+        return Ok();
+    }
 }

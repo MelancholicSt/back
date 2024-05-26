@@ -1,8 +1,10 @@
+    using System.Net;
     using System.Security.Claims;
     using Amazon.S3;
     using InstantAPIs;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Server.HttpSys;
@@ -10,13 +12,20 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 using WebApplication1;
+    using WebApplication1.Data.dao.Client;
     using WebApplication1.Data.dao.Identity;
+    using WebApplication1.Data.dao.Supplier;
     using WebApplication1.Service;
     using WebApplication1.Service.ImageService;
     using WebApplication1.Service.ProductMatcher;
     using DbContext = WebApplication1.DbContext;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.KnownProxies.Add(IPAddress.Parse("10.0.0.100"));
+});
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -49,6 +58,7 @@ builder.Services.AddDbContext<DbContext>(options =>
 });
 builder.Services.AddSingleton<IGeolocationService, GeolocationService>();
 builder.Services.AddCors();
+builder.Services.AddTransient<SignInManager<Client>>();
 builder.Services.AddTransient<IRequestService, RequestService>();
 builder.Services.AddTransient<IProductMatchService, ProductMatchService>();
 builder.Services.AddTransient<INotificationSender, NotificationSender>();
@@ -56,18 +66,26 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<ICloudImageService, CloudImageService>();
 builder.Services.AddControllers();
 
-builder.Services.AddIdentity<Account, IdentityRole>(o =>
+builder.Services.AddDefaultIdentity<Account>(options =>
     {
-        o.Password.RequireDigit = true;
-        o.Password.RequireUppercase = true;
-        o.User.RequireUniqueEmail = true;
-        o.Password.RequireNonAlphanumeric = false;
-        o.SignIn.RequireConfirmedEmail = true;
+        options.Password.RequireDigit = true;
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+        options.SignIn.RequireConfirmedAccount = true;
+        options.SignIn.RequireConfirmedEmail = true;
     })
-
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<DbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddIdentityCore<Client>()
+    .AddEntityFrameworkStores<DbContext>()
+    .AddDefaultTokenProviders();
+builder.Services.AddIdentityCore<Supplier>()
+
+    .AddEntityFrameworkStores<DbContext>()
+    .AddDefaultTokenProviders();
 
 
 builder.Services.AddAuthorization(x =>
@@ -96,9 +114,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 app.UseCors();
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseRouting();
 app.MapControllers();
 app.UseAuthentication();

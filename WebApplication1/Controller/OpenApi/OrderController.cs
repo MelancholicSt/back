@@ -77,11 +77,11 @@ public class OrderController : ControllerBase
             return NotFound("Order not found");
         var response = new
         {
-            Owner = order.ClientId,
+            Client = order.ClientId,
             CurrentStatus = order.Statuses.Last(),
-            Supplier = order.SupplierId,
-            Products = order.Materials.Select(product => product.Id),
-            Exparation = order.ExpirationTime
+            PerformingSupplier = order.SupplierId,
+            OrderedMaterials = order.Materials.Select(product => product.Id),
+            OrderExparation = order.ExpirationTime
         };
         return Ok(JsonConvert.SerializeObject(response));
     }
@@ -95,14 +95,6 @@ public class OrderController : ControllerBase
         return Ok(JsonConvert.SerializeObject(ids.ToList()));
     }
 
-    [HttpGet("status={name}")]
-    public IActionResult GetOrdersWithStatus(string name)
-    {
-        var orders = _context.Orders.Where(order => order.Statuses.Last().Name.ToLower() == name.ToLower());
-        var ids = orders.Select(order => order.Id);
-        return Ok(JsonConvert.SerializeObject(ids));
-    }
-
     [HttpGet("{orderId}/price")]
     public async Task<IActionResult> GetOrderPrice(ulong orderId)
     {
@@ -113,7 +105,7 @@ public class OrderController : ControllerBase
         throw new NotImplementedException();
     }
     
-    [HttpPost("{orderId}/status={name}")]
+    [HttpPost("{orderId}/set/status={name}")]
     public async Task<IActionResult> SetOrderStatus(ulong orderId, string name)
     {
         var order = await _context.Orders.Include(order => order.Statuses)
@@ -125,18 +117,18 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet("client/{clientId}/all")]
-    public IActionResult GetAllClientOrders(string clientId, string? currentStatus)
+    public IActionResult GetAllClientOrders(string clientId, string? withStatus)
     {
         var orders = _context.Orders.Where(order => order.ClientId == clientId);
-        if (currentStatus != null)
+        if (withStatus != null)
             orders = orders
                 .Where(
                     order => order.Statuses
                         .Select(status => status.Name.ToLower())
                         .ToList()
-                        .Last() == currentStatus
+                        .Last() == withStatus
                 );
-
-        return Ok(JsonConvert.SerializeObject(orders.ToList()));
+        var orderIds = orders.ToList().Select(order => order.Id);
+        return Ok(JsonConvert.SerializeObject(orderIds));
     }
 }

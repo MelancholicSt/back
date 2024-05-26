@@ -26,6 +26,7 @@ public sealed class DbContext : IdentityDbContext<Account>
     public DbSet<MaterialSellInfo> SellInfos { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<Client> Clients { get; set; }
+    public DbSet<Account> Accounts { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Contact> Contacts { get; set; }
     public DbSet<DeliverCompany> DeliverCompanies { get; set; }
@@ -40,29 +41,34 @@ public sealed class DbContext : IdentityDbContext<Account>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
+        builder.Entity<Supplier>(entity => entity.ToTable("Suppliers"));
+        builder.Entity<Client>(entity => entity.ToTable("Clients"));
+        builder.Entity<Account>(entity => entity.ToTable("Accounts"));
         builder.Entity<Client>().HasOne(x => x.ClientBucket).WithOne(x => x.Client)
             .HasForeignKey<ClientBucket>(x => x.ClientId);
         builder.Entity<Client>().HasOne(x => x.FavouritesBucket).WithOne(x => x.Client)
             .HasForeignKey<FavouritesBucket>(x => x.ClientId);
 
 
-
+        builder.Entity<Organization>().HasOne(x => x.DeliverCompany).WithOne()
+            .HasForeignKey<DeliverCompany>(x => x.CompanyOrganizationId);
         builder.Entity<Supplier>()
             .HasMany(x => x.Materials)
             .WithMany(x => x.Suppliers);
-        
+
         builder.Entity<Supplier>()
             .HasMany(x => x.PerformingOrders)
             .WithOne(x => x.Supplier)
             .HasForeignKey(x => x.SupplierId);
 
-
+        builder.Entity<Image>().HasOne(x => x.Material)
+            .WithMany().HasForeignKey(x => x.MaterialId);
+        builder.Entity<Image>().HasOne(x => x.Material).WithOne().HasForeignKey<Image>(x => x.MaterialId);
         builder.Entity<FavouritesBucket>()
             .HasMany(x => x.FavouriteProducts)
             .WithMany(x => x.FavouritesBuckets);
         builder.Entity<ClientBucket>()
-            .HasMany(x => x.Products)
+            .HasMany(x => x.Materials)
             .WithMany(x => x.ClientBuckets);
     }
 }

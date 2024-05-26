@@ -13,9 +13,10 @@ public class Material
     public ulong CategoryId { get; set; }
     
     public string Description { get; set; } = null!;
-    public string Measure { get; set; } = "Thing";
+    public string? Measure { get; set; } = "Thing";
     
     public Image? MainImage { get; set; }
+    public ulong MainImageId { get; set; }
     public List<Image>? Images { get; } = new();
     public List<Order.Order>? Orders { get; } = new();
     public List<Supplier.Supplier> Suppliers { get; } = new();

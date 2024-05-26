@@ -7,11 +7,11 @@ namespace WebApplication1.Data.dao;
 
 public class Image
 {
-    [Key] public string Guid { get; set; } = null!;
+   [Key] public string Guid { get; set; } = null!;
 
     public string Extension { get; set; } = null!;
     public string Name { get; set; } = null!;
 
-    public Product.Material? Product { get; set; }
-    public ulong ProductId { get; set; }
+    public Material? Material { get; set; }
+    public ulong MaterialId { get; set; }
 }

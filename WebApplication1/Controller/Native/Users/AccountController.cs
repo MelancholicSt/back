@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using WebApplication1.Data.dao;
+using WebApplication1.Data.dao.Client;
 using WebApplication1.Data.dao.Identity;
 using WebApplication1.Data.Dto;
 using WebApplication1.Service.ImageService;
@@ -18,6 +19,8 @@ namespace WebApplication1.Controller;
 public class AccountController : ControllerBase
 {
     private SignInManager<Account> _signInManager;
+    private SignInManager<Client> _clientSignInManager;
+    private UserManager<Account> _userManager;
     private RoleManager<IdentityRole> _roleManager;
     private IEmailSender _emailSender;
     private ILogger<AccountController> _logger;
@@ -26,14 +29,16 @@ public class AccountController : ControllerBase
 
     public AccountController(SignInManager<Account> signInManager, IEmailSender emailSender,
         UserManager<Account> userManager, ILogger<AccountController> logger, RoleManager<IdentityRole> roleManager,
-        ICloudImageService imageService, DbContext context)
+        ICloudImageService imageService, DbContext context, SignInManager<Client> clientSignInManager)
     {
         _signInManager = signInManager;
         _emailSender = emailSender;
+        _userManager = userManager;
         _logger = logger;
         _roleManager = roleManager;
         _imageService = imageService;
         _context = context;
+        _clientSignInManager = clientSignInManager;
     }
 
     [HttpPost("account/register")]
@@ -51,17 +56,17 @@ public class AccountController : ControllerBase
             Organization = new Organization
             {
                 Name = "Not chosen"
-            }
+            },
         };
 
         var result = await _signInManager.UserManager.CreateAsync(user, account.Password);
-
+        
         if (!result.Succeeded)
         {
             _logger.LogError("Result is not succeeded. Got problem while creating user");
             foreach (var error in result.Errors)
                 _logger.LogTrace(error.Description);
-            return BadRequest();
+            return BadRequest(result.Errors);
         }
 
         user = await _signInManager.UserManager.FindByEmailAsync(user.Email);
@@ -105,6 +110,21 @@ public class AccountController : ControllerBase
             return BadRequest("Bad credentials");
         return Ok("Succeeded!");
     }
+
+    [HttpPost("logout")]
+    [Authorize("Confirmed")]
+    public async Task<IActionResult> Logout()
+    {
+        if (!_signInManager.IsSignedIn(User))
+            return BadRequest("User isn't logged in");
+
+        var userId = User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+        var user = await _signInManager.UserManager.FindByIdAsync(userId);
+
+        await _signInManager.SignOutAsync();
+
+        return Ok("Logged out");
+    }
     
     [HttpPost("image/set")]
     [Authorize("Confirmed")]
@@ -125,7 +145,7 @@ public class AccountController : ControllerBase
     {
         var userId = User.FindFirstValue("uid");
         
-        var user = await _signInManager.UserManager.Users.FirstAsync(x => x.Id == userId);
+        var user = await _userManager.Users.FirstAsync(x => x.Id == userId);
         var currentImage = await _context.Images.FirstAsync(x => x.Name == file.Name);
         
         await _imageService.DeleteFileAsync(currentImage.Guid);
@@ -141,18 +161,32 @@ public class AccountController : ControllerBase
     [Authorize("Confirmed")]
     public async Task<IActionResult> GetAccountInfo()
     {
-        var userId = User.FindFirstValue("uid");
+        var userId = User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
         var account = await _signInManager.UserManager.FindByIdAsync(userId);
         AccountInfoDto infoDto = new AccountInfoDto()
         {
             Name = account.AccountInfo.Name,
             Surname = account.AccountInfo.Surname,
-            Country = account.AccountInfo.Geolocation.Country,
-            City = account.AccountInfo.Geolocation.City,
-            AddressInCity = account.AccountInfo.Geolocation.LocalAddress,
-            FullAddress = account.AccountInfo.Geolocation.FullAddress
+            Country = account.AccountInfo.Geolocation?.Country!,
+            City = account.AccountInfo.Geolocation?.City!,
+            AddressInCity = account.AccountInfo.Geolocation?.LocalAddress!,
+            FullAddress = account.AccountInfo.Geolocation?.FullAddress!
         };
         return Ok(JsonConvert.SerializeObject(infoDto));
+    }
+
+    [HttpPut("set-role")]
+    public async Task<IActionResult> SetRole(string name)
+    {
+        var userId = User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value;
+        var user = await _userManager.FindByIdAsync(userId);
+        if (!await _roleManager.RoleExistsAsync(name))
+        {
+            await _roleManager.CreateAsync(new IdentityRole(name));
+        }
+        
+        await _userManager.AddToRoleAsync(user, name);
+        return Ok();
     }
     /// <summary>
     ///  asdfasdvascva
@@ -165,6 +199,7 @@ public class AccountController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> ConfirmEmail(string? code, string? userId)
     {
+        
         if (userId == null || code == null)
         {
             _logger.LogWarning("User id or confirmation code is null");

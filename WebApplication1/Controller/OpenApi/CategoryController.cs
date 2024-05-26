@@ -8,7 +8,7 @@ using WebApplication1.Data.dao.Product;
 namespace WebApplication1.Controller.OpenApi;
 
 [ApiController]
-[Route("categories/")]
+[Route("api/categories/")]
 public class CategoryController : ControllerBase
 {
     private DbContext _context;
@@ -105,9 +105,9 @@ public class CategoryController : ControllerBase
     }
 
     [HttpDelete("{categoryId}/remove/materials")]
-    public async Task<IActionResult> RemoveProductsFromCategory(ulong categoryId, [FromBody] List<ulong> productIds)
+    public async Task<IActionResult> RemoveMaterialsFromCategory(ulong categoryId, [FromBody] List<ulong> meterialIds)
     {
-        if (!productIds.Any())
+        if (!meterialIds.Any())
             return BadRequest("No product ids entered");
 
         var category = await _context.Categories
@@ -116,13 +116,13 @@ public class CategoryController : ControllerBase
         if (category == null)
             return NotFound("Category not found");
 
-        var currentProductIds = _context.Products
-            .Select(product => product.Id)
-            .Where(product => productIds.Contains(product));
+        var currentMaterialIds = _context.Materials
+            .Select(material => material.Id)
+            .Where(material => meterialIds.Contains(material));
 
-        if (!currentProductIds.SequenceEqual(productIds))
+        if (!currentMaterialIds.SequenceEqual(meterialIds))
         {
-            var notFoundProductIds = productIds.Except(currentProductIds);
+            var notFoundProductIds = meterialIds.Except(currentMaterialIds);
             return NotFound($"Those product ids not found: {string.Join("\n", notFoundProductIds)}");
         }
 

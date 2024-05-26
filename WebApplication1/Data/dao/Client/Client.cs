@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 using WebApplication1.Data.dao.Identity;
 
 namespace WebApplication1.Data.dao.Client;
@@ -22,5 +23,5 @@ public class Client : Account
     /// <summary>
     /// All client orders. Not depended on state
     /// </summary>
-    public List<Order>? Orders { get; } = new();
+    public List<Order> Orders { get; } = new();
 }

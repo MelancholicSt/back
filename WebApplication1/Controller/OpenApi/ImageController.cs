@@ -23,7 +23,7 @@ public class ImageController : ControllerBase
         var content = await _imageService.DownloadFileAsync(guid);
         if (content == null)
             return NotFound("File not found");
-           
+
         return File(content, "image/jpeg");
     }
 
@@ -32,7 +32,7 @@ public class ImageController : ControllerBase
     {
         if (await _imageService.DeleteFileAsync(guid))
             return Ok();
-        
+
         return NotFound("File not found");
     }
 
@@ -41,10 +41,10 @@ public class ImageController : ControllerBase
     {
         if (await _imageService.UploadFileAsync(image))
             return Ok();
-        
+
         if (!image.FileName.Contains(".jpg"))
             return BadRequest("Unsupported image file format sent. Supported formats: .jpg");
-        
+
         return BadRequest("File already exists");
     }
 }
